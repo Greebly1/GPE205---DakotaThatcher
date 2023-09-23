@@ -5,6 +5,11 @@ using UnityEngine;
 public abstract class Controller : MonoBehaviour {
 
     public Pawn pawn;
+    
+    public virtual void Init(Pawn possessedPawn) {
+        pawn = possessedPawn;
+    }
+    
     // Start is called before the first frame update
     public virtual void Start() { }
 

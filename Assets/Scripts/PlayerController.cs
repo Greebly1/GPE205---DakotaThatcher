@@ -1,45 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : Controller {
 
-    public KeyCode moveForwardKey;
-    public KeyCode moveBackwardKey;
-    public KeyCode turnLeftKey;
-    public KeyCode turnRightKey;
+    private PlayerInput playerInput;
+    private InputAction input_movement;
     // Start is called before the first frame update
+
+    public override void Init(Pawn possessedPawn) {
+        base.Init(possessedPawn);
+        playerInput = new PlayerInput();
+        input_movement = playerInput.Player.Movement;
+        OnEnable();
+    }
     public override void Start() {
         base.Start();   
     }
 
     // Update is called once per frame
-    void Update() {
+    public override void Update() {
         base.Update();
-        HandleInput();
+        Debug.Log("Movement Values: " + input_movement.ReadValue<Vector2>());
     }
 
     /// <summary>
-    /// Assigns functions to keycodes
+    /// Enable all input and bind functions to input events
     /// </summary>
-    void HandleInput() {
-        if (Input.GetKeyDown(moveForwardKey))
-        {
-            pawn.MoveForward();
-        }
-        if (Input.GetKeyDown(moveBackwardKey))
-        {
-            pawn.MoveBackward();
-        }
-        if (Input.GetKeyDown(turnLeftKey))
-        {
-            pawn.TurnLeft();
-        }
-        if (Input.GetKeyDown(turnRightKey))
-        {
-            pawn.TurnRight();
-        }
+    public void OnEnable() {
+        input_movement.Enable();
     }
 
-   
+    /// <summary>
+    /// Disable all input and unbind functions to input events
+    /// </summary>
+    public void OnDisable()
+    {
+        input_movement.Disable();
+    }
 }
