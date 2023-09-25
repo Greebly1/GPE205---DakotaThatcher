@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[System.Serializable]
 public class PlayerController : Controller {
 
     private PlayerInput playerInput;
@@ -17,6 +18,11 @@ public class PlayerController : Controller {
     }
     public override void Start() {
         base.Start();   
+
+        if (GameManager.Game != null)
+        {
+            GameManager.Game.players.Add(this);
+        }
     }
 
     // Update is called once per frame
@@ -38,5 +44,13 @@ public class PlayerController : Controller {
     public void OnDisable()
     {
         input_movement.Disable();
+    }
+
+    public void OnDestroy()
+    {
+        if (GameManager.Game != null)
+        {
+            GameManager.Game.players.Remove(this);
+        }
     }
 }

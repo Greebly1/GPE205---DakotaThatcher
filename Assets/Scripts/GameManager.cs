@@ -16,6 +16,8 @@ public class GameManager : MonoBehaviour {
     public Transform playerSpawn;
 
     public PlayerController player;
+
+    public List<PlayerController> players;
     #endregion
 
     // Awake called before the game starts
@@ -27,6 +29,7 @@ public class GameManager : MonoBehaviour {
         } else {
             Destroy(gameObject);
         }
+        players = new List<PlayerController>();
     }
 
     private void Start() {
