@@ -4,9 +4,6 @@ using UnityEngine;
 
 public abstract class Pawn : MonoBehaviour {
 
-    public float moveSpeed;
-    public float turnSpeed;
-
     // Start is called before the first frame update
     public virtual void Start() {
         
@@ -17,8 +14,7 @@ public abstract class Pawn : MonoBehaviour {
 
     }
 
-    public abstract void MoveForward();
-    public abstract void MoveBackward();
-    public abstract void TurnLeft();
-    public abstract void TurnRight();
+    public abstract void setThrottle(float amouunt);
+    public abstract void Turn(float amount);
+    public abstract void setBrake(float inputValue);
 }
