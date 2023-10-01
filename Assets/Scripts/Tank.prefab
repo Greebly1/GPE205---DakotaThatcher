@@ -83,11 +83,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de79064cef184ad4f898c716d5ec4037, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  acceleration: 600
   topSpeed: 1000
-  dampingAmount: 200
   stationaryTurnSpeed: 150
-  brakePower: 1
+  secondsToTopSpeed: 4
+  secondsUntilStoppedByDamping: 0
+  dampingScalarForBraking: 0
   turnSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -117,39 +117,6 @@ MonoBehaviour:
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  accelerationCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0.002319336
-      value: 1.001709
-      inSlope: -0.10996836
-      outSlope: -0.10996836
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.1655803
-    - serializedVersion: 3
-      time: 0.8657472
-      value: 0.50367445
-      inSlope: -2.1609175
-      outSlope: -2.1609175
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.0011597
-      value: -0.0034484863
-      inSlope: -6.745284
-      outSlope: -6.745284
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.111369446
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
