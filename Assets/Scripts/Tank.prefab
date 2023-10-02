@@ -84,10 +84,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topSpeed: 1000
-  stationaryTurnSpeed: 150
-  secondsToTopSpeed: 4
-  secondsUntilStoppedByDamping: 0
-  dampingScalarForBraking: 0
+  stationaryTurnSpeed: 175
+  secondsToTopSpeed: 1.5
+  dampingTime: 6
+  angularDamping: 100
+  dampingScalarForBraking: 4
   turnSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -125,28 +126,28 @@ MonoBehaviour:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.0013077259
-      value: 0.4987135
-      inSlope: 0.41866317
-      outSlope: 0.41866317
+      time: 0.00030589104
+      value: -0.008107185
+      inSlope: 0.81446046
+      outSlope: 0.81446046
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.46642786
-      value: 0.69453716
-      inSlope: 0.51057726
-      outSlope: 0.51057726
+      time: 0.594266
+      value: 0.47564983
+      inSlope: 1.6611226
+      outSlope: 1.6611226
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.9861839
-      value: 1.0076857
-      inSlope: 0.6024913
-      outSlope: 0.6024913
+      time: 1.014077
+      value: 1.5284452
+      inSlope: 2.5077846
+      outSlope: 2.5077846
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334

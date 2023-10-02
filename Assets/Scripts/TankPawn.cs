@@ -11,7 +11,8 @@ public class TankPawn : Pawn
         public float stationaryTurnSpeed;
         public float secondsToTopSpeed;
             private float acceleration;
-        public float secondsUntilStoppedByDamping;
+        public float dampingTime;
+        public float angularDamping;
             private float dampingAmount;
         public float dampingScalarForBraking;
             private float brakePower;
@@ -35,8 +36,15 @@ public class TankPawn : Pawn
     //Initialize constants
     public void Awake()
     {
-        acceleration = topSpeed / secondsToTopSpeed;
-
+        if (dampingTime <= 0)
+        {
+            dampingTime = 0.01f;
+        }
+        if (secondsToTopSpeed <= 0)
+        {
+            secondsToTopSpeed = 0.01f;
+        }
+        acceleration = (topSpeed / secondsToTopSpeed) + (topSpeed/dampingTime);
     }
     // Start is called before the first frame update
     public override void Start() {
@@ -52,6 +60,8 @@ public class TankPawn : Pawn
         CalculateVelocity();
 
         moveTank();
+
+        Debug.Log(movementSpeed());
     }
     #endregion
 
@@ -71,6 +81,11 @@ public class TankPawn : Pawn
         applyAcceleration();
 
         currentVelocity = Vector3.ClampMagnitude(currentVelocity, topSpeed);
+
+        if (movementSpeed() < 1)
+        {
+            currentVelocity *= 0;
+        }
     }
 
         #region Input
@@ -120,7 +135,7 @@ public class TankPawn : Pawn
             {
                 isBraking = false;
             }
-            brakeAmount = inputValue * dampingScalarForBraking;
+        brakeAmount = inputValue;
         }
         #endregion
 
@@ -130,11 +145,16 @@ public class TankPawn : Pawn
         /// </summary>
         private void applyDamping()
         {
-            //Calculate damping vector using public strength scalar multiplied by public scalar curve based on  movement speed
-            damping = brakeVector() * dampingAmount * dampingCurve.Evaluate(percentageOfTopSpeed());
-            Vector3 brakeScaledDamping = damping * brakeAmount;
-            currentVelocity += damping * Time.deltaTime;
-        }   
+        // >1 scalar
+        float brakeDamping = 1 + (brakeAmount * dampingScalarForBraking);
+
+        //The angle difference between the movement direction and the forward vector
+        float angularity = Vector3.Angle(movementDirection(), gameObject.transform.forward);
+        //a 0-1 scalar based on how close the angularity is to 90 (a percent of 90)
+        float angularDampingScalar = angularity / 90;
+        currentVelocity -= movementDirection() * ((topSpeed / dampingTime) * (brakeDamping) * dampingCurve.Evaluate(movementSpeed()) ) * Time.deltaTime;
+        currentVelocity -= movementDirection() * angularDamping * angularDampingScalar * Time.deltaTime;
+    }   
 
         /// <summary>
         /// Calculate's acceleration and applies it to velocity
