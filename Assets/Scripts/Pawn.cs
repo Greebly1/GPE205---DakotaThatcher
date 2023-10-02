@@ -4,6 +4,29 @@ using UnityEngine;
 
 public abstract class Pawn : MonoBehaviour {
 
+    #region variables
+
+
+    Rigidbody rb;
+
+    TankMovement moveComponent;
+    #endregion
+
+    public virtual void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = gameObject.AddComponent<Rigidbody>();
+        }
+
+        moveComponent = GetComponent<TankMovement>();
+        if (moveComponent == null)
+        {
+            Debug.Log("pawn does not have a move component");
+        }
+    }
+
     // Start is called before the first frame update
     public virtual void Start() {
         
@@ -14,7 +37,8 @@ public abstract class Pawn : MonoBehaviour {
 
     }
 
-    public abstract void setThrottle(float amouunt);
-    public abstract void Turn(float amount);
-    public abstract void setBrake(float inputValue);
+    public TankMovement GetMovement()
+    {
+        return moveComponent;
+    }
 }

@@ -35,9 +35,9 @@ public class PlayerController : Controller {
     public override void Update() {
         base.Update();
         Debug.Log("Movement Values: " + input_movement.ReadValue<Vector2>());
-        pawn.setThrottle(input_movement.ReadValue<Vector2>().y);
-        pawn.Turn(input_movement.ReadValue<Vector2>().x);
-        pawn.setBrake(input_brake.ReadValue<float>());
+        pawn.GetMovement().setThrottle(input_movement.ReadValue<Vector2>().y);
+        pawn.GetMovement().Turn(input_movement.ReadValue<Vector2>().x);
+        pawn.GetMovement().setBrake(input_brake.ReadValue<float>());
     }
     #endregion
 
