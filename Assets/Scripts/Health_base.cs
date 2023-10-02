@@ -24,10 +24,11 @@ public class Health : MonoBehaviour
         }
     }
     
-    public void takeDamage(GameObject instigator, float damage)
+    public void takeDamage(GameObject source, float damage)
     {
         currentHealth -= damage;
         checkDeath();
+        clampHealth();
     }
 
     private void checkDeath()
