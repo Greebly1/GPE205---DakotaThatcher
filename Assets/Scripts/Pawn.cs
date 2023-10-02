@@ -10,6 +10,8 @@ public abstract class Pawn : MonoBehaviour {
     Rigidbody rb;
 
     TankMovement moveComponent;
+
+    Health healthComponent;
     #endregion
 
     public virtual void Awake()
@@ -24,6 +26,12 @@ public abstract class Pawn : MonoBehaviour {
         if (moveComponent == null)
         {
             Debug.Log("pawn does not have a move component");
+        }
+
+        Health health = GetComponent<Health>();
+        if (healthComponent == null)
+        {
+            Debug.Log("pawn does not have a Health component");
         }
     }
 

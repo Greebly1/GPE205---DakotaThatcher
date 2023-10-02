@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3712778314425475993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9021145170210028469}
+  m_Layer: 0
+  m_Name: CannonBarrel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9021145170210028469
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3712778314425475993}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
+  m_LocalPosition: {x: -0.000073249634, y: -0.10242834, z: 0.00007679939}
+  m_LocalScale: {x: 0.01, y: 0.009999996, z: 0.009999996}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5470418251732128409}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &8738208051194131755
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -54,7 +85,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 3652011956315678642, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9021145170210028469}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
       insertIndex: -1
@@ -64,11 +98,22 @@ PrefabInstance:
       addedObject: {fileID: 5137666056239930507}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 8449299126067644008}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1705735920398786084}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
+      insertIndex: -1
       addedObject: {fileID: -107985586998515127}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
       insertIndex: -1
       addedObject: {fileID: -3029250217574772392}
   m_SourcePrefab: {fileID: 100100000, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
+--- !u!4 &5470418251732128409 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3652011956315678642, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
+  m_PrefabInstance: {fileID: 8738208051194131755}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &8468227713242450042 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
@@ -161,6 +206,36 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8449299126067644008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8468227713242450042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1f7c81f4678f374eb5c7a65860c5d4a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunBarrel: {fileID: 9021145170210028469}
+  damage: 50
+  shell_prefab: {fileID: 3849163636915148319, guid: c11dce8d71afe9c4a85df735050c83f9, type: 3}
+  fireCooldown: 5
+--- !u!114 &1705735920398786084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8468227713242450042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d847f38dd2836244f80f8288378bdd8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
+  spawnHealth: 100
 --- !u!54 &-107985586998515127
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -53,7 +53,7 @@ public class TankMovement : MonoBehaviour
 
         moveTank();
 
-        Debug.Log(movementSpeed());
+        //Debug.Log(movementSpeed());
     }
 
     #region Movement

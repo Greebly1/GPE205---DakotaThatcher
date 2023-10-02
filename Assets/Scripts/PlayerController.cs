@@ -11,6 +11,7 @@ public class PlayerController : Controller {
     private PlayerInput playerInput;
     private InputAction input_movement;
     private InputAction input_brake;
+    private InputAction input_fire1;
     // Start is called before the first frame update
 
     #region start/update
@@ -19,6 +20,7 @@ public class PlayerController : Controller {
         playerInput = new PlayerInput();
         input_movement = playerInput.Player.Movement;
         input_brake = playerInput.Player.Brake;
+        input_fire1 = playerInput.Player.Fire1;
         OnEnable();
     }
     
@@ -34,11 +36,18 @@ public class PlayerController : Controller {
     // Update is called once per frame
     public override void Update() {
         base.Update();
-        Debug.Log("Movement Values: " + input_movement.ReadValue<Vector2>());
+        //Debug.Log("Movement Values: " + input_movement.ReadValue<Vector2>());
         pawn.GetMovement().setThrottle(input_movement.ReadValue<Vector2>().y);
         pawn.GetMovement().Turn(input_movement.ReadValue<Vector2>().x);
         pawn.GetMovement().setBrake(input_brake.ReadValue<float>());
     }
+
+    private void mouse1(InputAction.CallbackContext context)
+    {
+        Shooter_Cannon cannon = pawn.GetComponent<Shooter_Cannon>();
+        cannon.tryShoot();
+    }
+
     #endregion
 
     #region enable/disable input
@@ -49,6 +58,10 @@ public class PlayerController : Controller {
         input_movement.Enable();
 
         input_brake.Enable();
+
+        input_fire1.Enable();
+
+        input_fire1.performed += mouse1;
     }
 
 
@@ -60,6 +73,10 @@ public class PlayerController : Controller {
         input_movement.Disable();
 
         input_brake.Disable();
+
+        input_fire1.Disable();
+
+        input_fire1.performed -= mouse1;
     }
 
     public void OnDestroy()
