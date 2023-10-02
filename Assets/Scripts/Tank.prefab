@@ -230,7 +230,7 @@ MonoBehaviour:
   gunBarrel: {fileID: 9021145170210028469}
   damage: 50
   shell_prefab: {fileID: 3849163636915148319, guid: c11dce8d71afe9c4a85df735050c83f9, type: 3}
-  fireCooldown: 5
+  fireCooldown: 3
 --- !u!114 &1705735920398786084
 MonoBehaviour:
   m_ObjectHideFlags: 0

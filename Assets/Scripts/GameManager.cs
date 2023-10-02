@@ -13,7 +13,9 @@ public class GameManager : MonoBehaviour {
 
     public GameObject prefab_playerController;
     public GameObject prefab_playerPawn;
+    public GameObject prefab_playerCamera;
     public Transform playerSpawn;
+    public Transform playerCameraOffset;
 
     public PlayerController player;
 
@@ -45,9 +47,12 @@ public class GameManager : MonoBehaviour {
     public void SpawnPlayer(Transform spawnPoint) {
         GameObject playerControllerobj = Instantiate(prefab_playerController, spawnPoint.position, spawnPoint.rotation);
         GameObject playerPawnobj = Instantiate(prefab_playerPawn, playerControllerobj.transform.position, playerControllerobj.transform.rotation);
+        GameObject playerCameraobj = Instantiate(prefab_playerCamera, spawnPoint.position, spawnPoint.rotation);
+
 
         player = playerControllerobj.GetComponent<PlayerController>();
         player.Init(playerPawnobj.GetComponent<TankPawn>());
+        playerCameraobj.GetComponent<cameraFollow>().focus = playerPawnobj;
     }
 
 }
