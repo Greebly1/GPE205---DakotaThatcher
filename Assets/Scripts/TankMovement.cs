@@ -85,6 +85,11 @@ public class TankMovement : MonoBehaviour
     /// </summary>
     public void moveTank()
     {
+        RaycastHit moveTest;
+        if (!rb.SweepTest(movementDirection(), out moveTest))
+        {
+            Debug.Log("hitting wall");
+        }
         rb.MovePosition(gameObject.transform.position + (Time.deltaTime * currentVelocity));
     }
 
