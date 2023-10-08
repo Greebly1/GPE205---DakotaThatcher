@@ -73,7 +73,7 @@ public class TankMovement : MonoBehaviour
 
         currentVelocity = Vector3.ClampMagnitude(currentVelocity, topSpeed);
 
-        if (movementSpeed() < 1)
+        if (getMovementSpeed() < 1)
         {
             currentVelocity *= 0;
         }
@@ -86,7 +86,7 @@ public class TankMovement : MonoBehaviour
     public void moveTank()
     {
         RaycastHit moveTest;
-        if (!rb.SweepTest(movementDirection(), out moveTest))
+        if (!rb.SweepTest(getMovementDirection(), out moveTest))
         {
             Debug.Log("hitting wall");
         }
@@ -99,7 +99,7 @@ public class TankMovement : MonoBehaviour
     /// <param name="inputAmount">inputAmount: -1 - 1 float representing left or right turning</param>
     public void Turn(float inputAmount)
     {
-        float turnAmount = (inputAmount * stationaryTurnSpeed) * turnSpeedCurve.Evaluate(percentageOfTopSpeed());
+        float turnAmount = (inputAmount * stationaryTurnSpeed) * turnSpeedCurve.Evaluate(getPercentageOfTopSpeed());
         gameObject.transform.Rotate(0f, turnAmount * Time.deltaTime, 0f, Space.World);
     }
 
@@ -146,11 +146,11 @@ public class TankMovement : MonoBehaviour
         float brakeDamping = 1 + (brakeAmount * dampingScalarForBraking);
 
         //The angle difference between the movement direction and the forward vector
-        float angularity = Vector3.Angle(movementDirection(), gameObject.transform.forward);
+        float angularity = Vector3.Angle(getMovementDirection(), gameObject.transform.forward);
         //a 0-1 scalar based on how close the angularity is to 90 (a percent of 90)
         float angularDampingScalar = angularity / 90;
-        currentVelocity -= movementDirection() * (passiveDamping() * brakeDamping * dampingCurve.Evaluate(movementSpeed())) * Time.deltaTime;
-        currentVelocity -= movementDirection() * angularDamping * angularDampingScalar * Time.deltaTime;
+        currentVelocity -= getMovementDirection() * (passiveDamping() * brakeDamping * dampingCurve.Evaluate(getMovementSpeed())) * Time.deltaTime;
+        currentVelocity -= getMovementDirection() * angularDamping * angularDampingScalar * Time.deltaTime;
     }
 
     /// <summary>
@@ -176,24 +176,33 @@ public class TankMovement : MonoBehaviour
         float damping = topSpeed / dampingTime;
         return damping;
     }
-    private Vector3 brakeVector()
+    public Vector3 getCurrentVelocity()
     {
-        Vector3 brakevector = movementDirection() * -1;
+        return currentVelocity;
+    }
+    public Vector3 getBrakeVector()
+    {
+        Vector3 brakevector = getMovementDirection() * -1;
         return brakevector;
     }
-    private Vector3 movementDirection()
+    public Vector3 getForwardVector()
     {
+        return gameObject.transform.forward;
+    }
+    public Vector3 getMovementDirection()
+    {
+
         Vector3 movementDirection = currentVelocity.normalized;
         return movementDirection;
     }
-    private float movementSpeed()
+    public float getMovementSpeed()
     {
         float movementSpeed = currentVelocity.magnitude;
         return movementSpeed;
     }
-    private float percentageOfTopSpeed()
+    public float getPercentageOfTopSpeed()
     {
-        return movementSpeed() / topSpeed;
+        return getMovementSpeed() / topSpeed;
     }
     #endregion
 }
