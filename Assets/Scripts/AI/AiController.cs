@@ -61,7 +61,7 @@ public class AiController : Controller
 
     }
 
-    private  bool isAccelerationValid(Vector3 goalDirection)
+    private  bool isAccelerationValid(Vector3 goalDirection, Vector3 forwardVector)
     {
 
     }

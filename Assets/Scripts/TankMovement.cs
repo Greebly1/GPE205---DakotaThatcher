@@ -171,7 +171,7 @@ public class TankMovement : MonoBehaviour
 
 
     #region Macros
-    private float passiveDamping()
+    public float passiveDamping()
     {
         float damping = topSpeed / dampingTime;
         return damping;
