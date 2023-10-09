@@ -147,6 +147,8 @@ MonoBehaviour:
   stationaryTurnSpeed: 150
   secondsToTopSpeed: 2
   dampingTime: 6
+  baseDamping: 0.7
+  dampingScalar: 2
   angularDamping: 80
   dampingScalarForBraking: 3
   turnSpeedCurve:
@@ -175,39 +177,6 @@ MonoBehaviour:
       value: 0.19738007
       inSlope: -0.8113107
       outSlope: -0.8113107
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  dampingCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: -0.010761186
-      value: 0.18867844
-      inSlope: 0.48671418
-      outSlope: 0.48671418
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 0.48898917
-      value: 0.43191403
-      inSlope: 0.79920244
-      outSlope: 0.79920244
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 1.1116906
-      outSlope: 1.1116906
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334

@@ -1,21 +1,56 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class TankMovement : MonoBehaviour
 {
 
     #region variables
+
+    public struct simulationResult
+    {
+        float duration;
+        Vector3 changeInPosition;
+        Vector3 endVelocity;
+        float distance;
+        public simulationResult(Vector3 change, float time, Vector3 endVelocity, float distance)
+        {
+            this.changeInPosition = change;
+            this.duration = time;
+            this.endVelocity = endVelocity;
+            this.distance = distance;
+        }
+        public float getDuration()
+        {
+            return duration;
+        }
+        public Vector3 getChangeInPosition()
+        {
+            return changeInPosition;
+        }
+        public Vector3 getEndVelocity()
+        {
+            return endVelocity;
+        }
+        public float getDistance()
+        {
+            return distance;
+        }
+    }
+
     #region Properties and Constants
     public float topSpeed;
     public float stationaryTurnSpeed;
     public float secondsToTopSpeed;
     private float acceleration;
     public float dampingTime;
+    public float baseDamping;
+    public float dampingScalar;
     public float angularDamping;
     public float dampingScalarForBraking;
     [SerializeField] private AnimationCurve turnSpeedCurve;
-    [SerializeField] private AnimationCurve dampingCurve;
+    //[SerializeField] private AnimationCurve dampingCurve;
     #endregion
 
     #region Current Frame Information
@@ -53,7 +88,8 @@ public class TankMovement : MonoBehaviour
 
         moveTank();
 
-        //Debug.Log(movementSpeed());
+        Debug.DrawLine(transform.position, transform.position + transform.forward * 25, Color.blue);
+        Debug.DrawLine(transform.position, transform.position + getMovementDirection() * 25, Color.green);
     }
 
     #region Movement
@@ -85,11 +121,11 @@ public class TankMovement : MonoBehaviour
     /// </summary>
     public void moveTank()
     {
-        RaycastHit moveTest;
+       /* RaycastHit moveTest;
         if (!rb.SweepTest(getMovementDirection(), out moveTest))
         {
             Debug.Log("hitting wall");
-        }
+        } */
         rb.MovePosition(gameObject.transform.position + (Time.deltaTime * currentVelocity));
     }
 
@@ -101,6 +137,20 @@ public class TankMovement : MonoBehaviour
     {
         float turnAmount = (inputAmount * stationaryTurnSpeed) * turnSpeedCurve.Evaluate(getPercentageOfTopSpeed());
         gameObject.transform.Rotate(0f, turnAmount * Time.deltaTime, 0f, Space.World);
+    }
+
+    public void TurnToTarget(float inputAmount, Vector3 target)
+    {
+        float CurrentAngle = angleToTarget(target);
+        if (CurrentAngle > 0)
+        {
+            Turn(inputAmount);
+            //Turn Right
+        } else if (CurrentAngle < 0)
+        {
+            Turn(inputAmount * -1);
+            //Turn left
+        }
     }
 
     /// <summary>
@@ -149,7 +199,7 @@ public class TankMovement : MonoBehaviour
         float angularity = Vector3.Angle(getMovementDirection(), gameObject.transform.forward);
         //a 0-1 scalar based on how close the angularity is to 90 (a percent of 90)
         float angularDampingScalar = angularity / 90;
-        currentVelocity -= getMovementDirection() * (passiveDamping() * brakeDamping * dampingCurve.Evaluate(getMovementSpeed())) * Time.deltaTime;
+        currentVelocity -= getMovementDirection() * (passiveDamping() * brakeDamping * dampingScalarFormula()) * Time.deltaTime;
         currentVelocity -= getMovementDirection() * angularDamping * angularDampingScalar * Time.deltaTime;
     }
 
@@ -204,5 +254,57 @@ public class TankMovement : MonoBehaviour
     {
         return getMovementSpeed() / topSpeed;
     }
+
+    public float dampingScalarFormula()
+    {
+        return (dampingScalar * getPercentageOfTopSpeed()) + baseDamping;
+    }
+    public float angleToTarget(Vector3 targetPosition)
+    {
+        return angleToTarget(transform.position, targetPosition, transform.forward);
+    }
+    public float angleToTarget(Vector3 startPosition, Vector3 targetPosition, Vector3 forward)
+    {
+        Vector3 directionToTarget = (startPosition - targetPosition).normalized;
+
+        Vector3 adjustmentVector = new Vector3(1f, 0f, 1f);
+
+        Vector3 adjustedDirection = Vector3.Scale(directionToTarget, adjustmentVector);
+        Vector3 adjustedForward = Vector3.Scale(forward, adjustmentVector) * -1;
+
+        return Vector3.SignedAngle(adjustedForward, adjustedDirection, Vector3.up);
+    }
+
+    public simulationResult SimulateMovement(Vector3 targetPosition, float stopSpeed = 0, float stopDistance = 10)
+    {
+        float secondsSimulated = 0;
+        Vector3 changeInPosition = Vector3.zero;
+        Vector3 tempVelocity = getCurrentVelocity();
+        Vector3 moveDirection = tempVelocity.normalized;
+        float passiveDamp = passiveDamping();
+        float tempDampScalar = dampingScalar;
+        float tempTopSpeed = topSpeed;
+        float tempBaseDamping = baseDamping;
+        Vector3 angularDampingScalar = moveDirection * angularDamping * ((Vector3.Angle(moveDirection,
+            getForwardVector())) / 90);
+
+        //while the speed is greater than the stopping speed, and the distance from target is greater than the end distance
+        while ((tempVelocity.magnitude > stopSpeed) && (targetPosition - (transform.position + changeInPosition)).magnitude > stopDistance)
+        {
+            //calculate change in velocity through damping
+            tempVelocity -= moveDirection * passiveDamp * (tempDampScalar * (tempVelocity.magnitude / tempTopSpeed) + tempBaseDamping);
+
+            //calculate change in velocity through angular damping
+            tempVelocity -= angularDampingScalar;
+
+            //add velocity to the change in position
+            changeInPosition += tempVelocity;
+
+            secondsSimulated++;
+        }
+
+        return new simulationResult(changeInPosition, secondsSimulated, tempVelocity, (targetPosition - (transform.position + changeInPosition)).magnitude);
+    }
+
     #endregion
 }
