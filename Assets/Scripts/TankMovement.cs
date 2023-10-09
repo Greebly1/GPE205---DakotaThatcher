@@ -38,6 +38,7 @@ public class TankMovement : MonoBehaviour
             return distance;
         }
     }
+    private simulationResult simulation;
 
     #region Properties and Constants
     public float topSpeed;
@@ -88,8 +89,11 @@ public class TankMovement : MonoBehaviour
 
         moveTank();
 
+        //simulation = SimulateMovement(new Vector3(0f, 100f, 0f), 0, 10);
+
         Debug.DrawLine(transform.position, transform.position + transform.forward * 25, Color.blue);
         Debug.DrawLine(transform.position, transform.position + getMovementDirection() * 25, Color.green);
+        //Debug.DrawLine(transform.position, transform.position + simulation.getChangeInPosition() * 25, Color.red);
     }
 
     #region Movement
