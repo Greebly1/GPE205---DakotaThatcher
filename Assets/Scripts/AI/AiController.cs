@@ -19,7 +19,28 @@ public class AiController : Controller
 
     public GameObject target;
 
+    public float distanceToStartBraking;
+
+    private bool useBrakes = false;
+
     private Vector3 goalPosition;
+
+    public struct simulationResult
+    {
+        public float timeSpan;
+        public float distanceFromTarget;
+        public Vector3 endVelocity;
+        public Vector3 deltaPosition;
+        public bool overShoots;
+        public simulationResult(float time, float distance, Vector3 finalVelocity, Vector3 positionChange, bool overShootsTarget)
+        {
+            timeSpan = time;
+            distanceFromTarget = distance;
+            endVelocity = finalVelocity;
+            deltaPosition = positionChange;
+            overShoots = overShootsTarget;
+        }
+    }
     #endregion
 
     // Start is called before the first frame update
@@ -34,6 +55,10 @@ public class AiController : Controller
     public override void Update()
     {
         base.Update();
+
+        pawnMovement.targetPosition = target.transform.position;
+
+        checkBrakes();
 
         seek(target.transform.position);
     }
@@ -69,30 +94,83 @@ public class AiController : Controller
                 //Turn left
             }
         } else pawnMovement.turnInput = 0;
-        
 
-        //if (pawnMovement.SimulateMovement(targetPosition, 0f, 10f).)
         //accelerate forwards if it will make the movement direction closer to the targetdirection
-        //brake if ---- this tank is going to overshoot 
+        if (movesCloserToTarget() && !endPositionInRange(20))
+        {
+            pawnMovement.throttleInput = 1;
+        }
+        else pawnMovement.throttleInput = 0;
 
+
+        //brake if ---- this tank is going to overshoot 
+        
+        if (useBrakes && pawnMovement.seer.overShoots && ((target.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude > 20))
+        {
+            //Debug.Log("Overshooting - applying brakes");
+            pawnMovement.brakeInput = 1;
+        }
+        else if ((target.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude < 20)
+        {
+            //Debug.Log("Not overshooting - disabling brakes and throttle");
+            pawnMovement.throttleInput = 0;
+            pawnMovement.brakeInput = 0;
+        } else
+        {
+            //Debug.Log("Not overshooting - disabling brakes");
+            pawnMovement.brakeInput = 0;
+        } 
     }
-    
-    #region macros
-    /*
-    private bool willOvershoot(simulationResult movementSim, Vector3 targetPosition, float time = 0)
+
+    //decides whether to start checking to brake or not
+    private void checkBrakes()
     {
-        //if the current distance from the target is smaller than the distance from the target to where the tank will be when it stops
-        if (distanceFromTarget(targetPosition) < (targetPosition - (pawn.transform.position + movementSim.getChangeInPosition())).magnitude)
+        if (Vector3.Distance(Vector3.Scale(target.transform.position, new Vector3(1,0,1)), Vector3.Scale(pawn.transform.position, new Vector3(1, 0, 1))) < distanceToStartBraking)
+        {
+            useBrakes = true;
+        } else useBrakes = false;
+    }
+
+    #region macros
+    
+    private bool endPositionInRange(float range)
+    {
+        return (target.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude < range;
+    }
+
+    private bool accelerateBool(Vector3 target)
+    {
+        bool fixVelocity = isAccelerationValid((target - pawn.transform.position).normalized, pawn.transform.forward);
+        bool movesCloser = movesCloserToTarget();
+        return fixVelocity && movesCloser;
+    }
+
+    private bool movesCloserToTarget()
+    {
+        return movesCloserToTarget(pawn.transform.position, pawn.transform.forward, target.transform.position);
+    }
+    private bool movesCloserToTarget(Vector3 currentPosition, Vector3 forward, Vector3 targetPosition)
+    {
+        Vector3 newPosition = currentPosition + forward.normalized * 5;
+        float currentDistance = (currentPosition - targetPosition).magnitude;
+        float newDistance = (newPosition - targetPosition).magnitude;
+        if (newDistance <= currentDistance)
         {
             return true;
         }
         return false;
     }
-    */
-    /*private  bool isAccelerationValid(Vector3 goalDirection, Vector3 forwardVector)
-    {
 
-    }*/
+    private bool isAccelerationValid(Vector3 goalDirection, Vector3 forwardVector)
+    {
+        Vector3 newVec = pawnMovement.moveDir() + forwardVector;
+        if (Mathf.Abs(Vector3.SignedAngle(newVec, goalDirection, Vector3.up)) > Mathf.Abs(Vector3.SignedAngle(pawnMovement.moveDir(), goalDirection, Vector3.up)))
+        {
+            return true;
+        }
+        return false;
+
+    }
 
     private Vector3 targetVector(Vector3 targetPosition)
     {

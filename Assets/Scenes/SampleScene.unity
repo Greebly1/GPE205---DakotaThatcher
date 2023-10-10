@@ -448,8 +448,12 @@ PrefabInstance:
       value: 120
       objectReference: {fileID: 0}
     - target: {fileID: 759653843836178129, guid: 4a1ef27ec1ddfb3439d5c018cab2fc5b, type: 3}
+      propertyPath: baseDamping
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 759653843836178129, guid: 4a1ef27ec1ddfb3439d5c018cab2fc5b, type: 3}
       propertyPath: angularDamping
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8468227713242450042, guid: 4a1ef27ec1ddfb3439d5c018cab2fc5b, type: 3}
       propertyPath: m_Name
@@ -534,6 +538,7 @@ MonoBehaviour:
   turningErrorMargin: 4
   currentState: 0
   target: {fileID: 425720777}
+  distanceToStartBraking: 50
 --- !u!4 &1526933306
 Transform:
   m_ObjectHideFlags: 0

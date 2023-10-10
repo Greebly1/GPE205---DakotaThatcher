@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour {
 
     private void Update()
     {
-        Debug.Log("FPS last frame = " + 1f / Time.deltaTime);
+        //Debug.Log("FPS last frame = " + 1f / Time.deltaTime);
     }
 
     private void Start() {

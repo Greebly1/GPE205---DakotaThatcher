@@ -24,7 +24,12 @@ public class TankMovement : MonoBehaviour
     [HideInInspector] public float turnInput = 0;
     [HideInInspector] public float brakeInput = 0;
     private bool isGrounded = true;
-    simulationResult seer;
+    public simulationResult seer;
+
+
+    //TEMPORARY WORKAROUND VARS
+    //Used for movement simulation pathfinding
+    [HideInInspector] public Vector3 targetPosition = Vector3.zero;
 
     //cached references
     Rigidbody rb;
@@ -39,13 +44,13 @@ public class TankMovement : MonoBehaviour
 
     private void Update()
     {
-        seer = performSimulation(0.06f, 0f, Vector3.zero);
+        seer = performSimulation(0.06f, 0f, targetPosition);
 
         //Debug.Log("TargetPosition = " + (seer.deltaPosition + transform.position));
         //Debug.Log("Damping = " + CalculateDamping(Time.deltaTime).magnitude);
         //Debug.Log("AngularDamping = " + CalculateAngularDamping(Time.deltaTime).magnitude);
-        Debug.Log("Angularity Left:" +angularity(Vector3.forward, Vector3.left));
-        Debug.Log("Angularity Back:" + angularity(Vector3.forward, Vector3.back));
+        //Debug.Log("Angularity Left:" +angularity(Vector3.forward, Vector3.left));
+        //Debug.Log("Angularity Back:" + angularity(Vector3.forward, Vector3.back));
 
         Debug.DrawLine(transform.position, transform.position + seer.deltaPosition, Color.green);
         //Debug.DrawLine(transform.position, transform.position + moveDir()*25, Color.red);
@@ -287,12 +292,14 @@ public class TankMovement : MonoBehaviour
         public float distanceFromTarget;
         public Vector3 endVelocity;
         public Vector3 deltaPosition;
-        public simulationResult(float time, float distance, Vector3 finalVelocity, Vector3 positionChange)
+        public bool overShoots;
+        public simulationResult(float time, float distance, Vector3 finalVelocity, Vector3 positionChange, bool overShootsTarget)
         {
             timeSpan = time;
             distanceFromTarget = distance;
             endVelocity = finalVelocity;
             deltaPosition = positionChange;
+            overShoots = overShootsTarget;
         }
     }
 
@@ -308,14 +315,17 @@ public class TankMovement : MonoBehaviour
         Vector3 movement = Vector3.zero;
         Vector3 moveDir = tempVelocity.normalized;
         float duration = 0f;
+        bool overShot = false;
 
-        float distanceFromTarget = (targetPosition - currentPosition).magnitude;
+        float DistanceFromTarget = (targetPosition - currentPosition).magnitude;
 
         while (tempVelocity.magnitude > endVelocity && duration < length)
         {
             Vector3 dampingVector = CalculateDamping(timeStep, moveDir, dampingPower, frictionPower, tempVelocity.magnitude, baseFriction, 1);
             Vector3 angularDampingVector = CalculateAngularDamping(timeStep, moveDir, startForward, angularDampingStrength, tempVelocity.magnitude);
             Vector3 accel = dampingVector + angularDampingVector;
+            Vector3 targetVelocity;
+            
 
             if ((tempVelocity + accel).magnitude >= tempVelocity.magnitude) break;
 
@@ -323,11 +333,17 @@ public class TankMovement : MonoBehaviour
             movement += tempVelocity * timeStep;
             applyAcceleration(0.5f, accel, ref tempVelocity, true);
 
-            duration += timeStep;
+            if (DistanceFromTarget > (targetPosition - (currentPosition + movement)).magnitude ) {
+                DistanceFromTarget = (targetPosition - (currentPosition + movement)).magnitude;
+            } else
+            {
+                targetVelocity = tempVelocity;
+                overShot = true;
+            }
 
-            if (distanceFromTarget < (targetPosition - currentPosition).magnitude) break;
+            duration += timeStep;
         }
 
-        return new simulationResult(duration, distanceFromTarget, tempVelocity, movement);
+        return new simulationResult(duration, DistanceFromTarget, tempVelocity, movement, overShot);
     }
 }
