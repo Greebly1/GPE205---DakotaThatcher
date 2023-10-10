@@ -12,11 +12,13 @@ public class PlayerController : Controller {
     private InputAction input_movement;
     private InputAction input_brake;
     private InputAction input_fire1;
+    private TankMovement pawnMovement;
     // Start is called before the first frame update
 
     #region start/update
     public override void Init(Pawn possessedPawn) {
         base.Init(possessedPawn);
+        pawnMovement = pawn.GetComponent<TankMovement>();
         playerInput = new PlayerInput();
         input_movement = playerInput.Player.Movement;
         input_brake = playerInput.Player.Brake;
@@ -36,16 +38,27 @@ public class PlayerController : Controller {
     // Update is called once per frame
     public override void Update() {
         base.Update();
-        //Debug.Log("Movement Values: " + input_movement.ReadValue<Vector2>());
-        pawn.GetMovement().setThrottle(input_movement.ReadValue<Vector2>().y);
-        pawn.GetMovement().Turn(input_movement.ReadValue<Vector2>().x);
-        pawn.GetMovement().setBrake(input_brake.ReadValue<float>());
+        pawnMovement.brakeInput = (input_brake.ReadValue<float>());
+
+        pawnMovement.throttleInput = input_movement.ReadValue<Vector2>().y;
+        pawnMovement.turnInput = (input_movement.ReadValue<Vector2>().x);
     }
 
     private void mouse1(InputAction.CallbackContext context)
     {
         Shooter_Cannon cannon = pawn.GetComponent<Shooter_Cannon>();
         cannon.tryShoot();
+    }
+
+    private void brake(InputAction.CallbackContext context)
+    {
+       // pawnMovement.setBrake(input_brake.ReadValue<float>());
+    }
+
+    private void movement(InputAction.CallbackContext context)
+    {
+        //pawnMovement.setThrottle(input_movement.ReadValue<Vector2>().y);
+        //pawnMovement.Turn(input_movement.ReadValue<Vector2>().x);
     }
 
     #endregion
@@ -60,7 +73,6 @@ public class PlayerController : Controller {
         input_brake.Enable();
 
         input_fire1.Enable();
-
         input_fire1.performed += mouse1;
     }
 
@@ -75,7 +87,6 @@ public class PlayerController : Controller {
         input_brake.Disable();
 
         input_fire1.Disable();
-
         input_fire1.performed -= mouse1;
     }
 

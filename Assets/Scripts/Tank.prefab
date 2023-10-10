@@ -95,7 +95,7 @@ PrefabInstance:
       addedObject: {fileID: 3899731625060026231}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5137666056239930507}
+      addedObject: {fileID: 759653843836178129}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 97a55fc7b30e3ff47804db0c2a0e6be2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8449299126067644008}
@@ -131,7 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de79064cef184ad4f898c716d5ec4037, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &5137666056239930507
+--- !u!114 &759653843836178129
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,43 +140,33 @@ MonoBehaviour:
   m_GameObject: {fileID: 8468227713242450042}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d0ae74dab9ecc446a471a910b6f04d5, type: 3}
+  m_Script: {fileID: 11500000, guid: 8142a4c28c255d6478e95b33c4028836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topSpeed: 1000
-  stationaryTurnSpeed: 150
-  secondsToTopSpeed: 2
-  dampingTime: 6
-  baseDamping: 0.7
-  dampingScalar: 2
-  angularDamping: 80
-  dampingScalarForBraking: 3
+  topSpeed: 80
+  secondsToTopSpeed: 1.5
+  dampingScale: 0.5
+  frictionMultiplier: 1
+  turnSpeed: 110
+  baseDamping: 1
+  angularDamping: 10
   turnSpeedCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: -0.011096954
-      value: 1.0212097
-      inSlope: -0.81131077
-      outSlope: -0.81131077
+      time: 0
+      value: 1.0042725
+      inSlope: -0.69410175
+      outSlope: -0.69410175
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.5576811
-      value: 0.55975395
-      inSlope: -0.81131077
-      outSlope: -0.81131077
-      tangentMode: 34
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1.0043335
-      value: 0.19738007
-      inSlope: -0.8113107
-      outSlope: -0.8113107
+      time: 1.0117798
+      value: 0.30199432
+      inSlope: -0.69410175
+      outSlope: -0.69410175
       tangentMode: 34
       weightedMode: 0
       inWeight: 0.33333334
@@ -184,6 +174,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  brakePower: 3
+  throttleInput: 0
+  turnInput: 0
+  brakeInput: 0
 --- !u!114 &8449299126067644008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,9 +216,9 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8468227713242450042}
   serializedVersion: 4
-  m_Mass: 1
+  m_Mass: 100
   m_Drag: 0
-  m_AngularDrag: 0.5
+  m_AngularDrag: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}

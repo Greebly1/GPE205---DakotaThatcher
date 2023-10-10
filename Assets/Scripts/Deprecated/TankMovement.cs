@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class TankMovement : MonoBehaviour
+public class TankMovementDeprecated : MonoBehaviour
 {
 
     #region variables
@@ -13,13 +14,11 @@ public class TankMovement : MonoBehaviour
         float duration;
         Vector3 changeInPosition;
         Vector3 endVelocity;
-        float distance;
-        public simulationResult(Vector3 change, float time, Vector3 endVelocity, float distance)
+        public simulationResult(Vector3 change, float time, Vector3 endVelocity)
         {
             this.changeInPosition = change;
             this.duration = time;
             this.endVelocity = endVelocity;
-            this.distance = distance;
         }
         public float getDuration()
         {
@@ -33,10 +32,6 @@ public class TankMovement : MonoBehaviour
         {
             return endVelocity;
         }
-        public float getDistance()
-        {
-            return distance;
-        }
     }
     private simulationResult simulation;
 
@@ -48,7 +43,7 @@ public class TankMovement : MonoBehaviour
     public float dampingTime;
     public float baseDamping;
     public float dampingScalar;
-    public float angularDamping;
+    public float angularDampingPower;
     public float dampingScalarForBraking;
     [SerializeField] private AnimationCurve turnSpeedCurve;
     //[SerializeField] private AnimationCurve dampingCurve;
@@ -85,15 +80,25 @@ public class TankMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CalculateVelocity();
+        
 
-        moveTank();
+        //simulation = SimulateMovement(1);
+        Debug.Log(currentVelocity);
+        Debug.Log(currentVelocity.magnitude);
 
-        //simulation = SimulateMovement(new Vector3(0f, 100f, 0f), 0, 10);
-
+        Debug.DrawLine(transform.position, transform.position + currentVelocity, Color.red);
+        //Debug.DrawLine(transform.position, transform.position + getMovementDirection() * (passiveDamping() * dampingScalarFormula()), Color.black);
         Debug.DrawLine(transform.position, transform.position + transform.forward * 25, Color.blue);
         Debug.DrawLine(transform.position, transform.position + getMovementDirection() * 25, Color.green);
-        //Debug.DrawLine(transform.position, transform.position + simulation.getChangeInPosition() * 25, Color.red);
+    }
+
+    private void FixedUpdate()
+    {
+        CalculateVelocity(Time.fixedDeltaTime);
+
+        moveTank(Time.fixedDeltaTime);
+
+        CalculateVelocity(Time.fixedDeltaTime);
     }
 
     #region Movement
@@ -105,32 +110,28 @@ public class TankMovement : MonoBehaviour
     /// 3. Applies the brakes to velocity
     /// 4. Clamps velocity to range
     /// </summary>
-    private void CalculateVelocity()
+    private void CalculateVelocity(float timeStep)
     {
-        applyDamping();
+        applyDamping(timeStep);
 
-        applyAcceleration();
+        applyAcceleration(timeStep);
 
         currentVelocity = Vector3.ClampMagnitude(currentVelocity, topSpeed);
-
-        if (getMovementSpeed() < 1)
-        {
-            currentVelocity *= 0;
-        }
     }
 
     #region Input
     /// <summary>
     /// Moves tank across the currentVelocity vector
     /// </summary>
-    public void moveTank()
+    public void moveTank(float timeStep)
     {
        /* RaycastHit moveTest;
         if (!rb.SweepTest(getMovementDirection(), out moveTest))
         {
             Debug.Log("hitting wall");
         } */
-        rb.MovePosition(gameObject.transform.position + (Time.deltaTime * currentVelocity));
+        //rb.MovePosition(gameObject.transform.position + (Time.deltaTime * currentVelocity));
+        gameObject.transform.position += (currentVelocity * timeStep);
     }
 
     /// <summary>
@@ -194,28 +195,34 @@ public class TankMovement : MonoBehaviour
     /// <summary>
     /// Calculates  damping value then apply it to  velocity
     /// </summary>
-    private void applyDamping()
+    private void applyDamping(float timeStep)
     {
         // >1 scalar
         float brakeDamping = 1 + (brakeAmount * dampingScalarForBraking);
 
-        //The angle difference between the movement direction and the forward vector
-        float angularity = Vector3.Angle(getMovementDirection(), gameObject.transform.forward);
-        //a 0-1 scalar based on how close the angularity is to 90 (a percent of 90)
-        float angularDampingScalar = angularity / 90;
-        currentVelocity -= getMovementDirection() * (passiveDamping() * brakeDamping * dampingScalarFormula()) * Time.deltaTime;
-        currentVelocity -= getMovementDirection() * angularDamping * angularDampingScalar * Time.deltaTime;
+        currentVelocity -= getMovementDirection() * calculateDamping(timeStep, getMovementSpeed()) * brakeDamping * 0.5f;
+        currentVelocity -= getMovementDirection() * calculateAngularDamping(timeStep, angularDampingPower) * 0.5f;
+    }
+
+    public float calculateDamping(float timeStep, float speed)
+    {
+        return (passiveDamping() * dampingScalarFormula()) * timeStep;
+    }
+
+    public float calculateAngularDamping(float timeStep, float angularDampingScalar)
+    {
+        return (Vector3.Angle(getMovementDirection(), gameObject.transform.forward) / 90) * angularDampingScalar * timeStep;
     }
 
     /// <summary>
     /// Calculate's acceleration and applies it to velocity
     /// </summary>
-    private void applyAcceleration()
+    private void applyAcceleration(float timeStep)
     {
         //Calculate acceleration
         currentAcceleration = throttle;
         //Apply acceleration to the velocity
-        currentVelocity += currentAcceleration * Time.deltaTime;
+        currentVelocity += currentAcceleration * timeStep * 0.5f;
     }
     /// <summary>
     /// Applies brakes to velocity using a scalar value
@@ -225,6 +232,7 @@ public class TankMovement : MonoBehaviour
 
 
     #region Macros
+    
     public float passiveDamping()
     {
         float damping = topSpeed / dampingTime;
@@ -258,7 +266,6 @@ public class TankMovement : MonoBehaviour
     {
         return getMovementSpeed() / topSpeed;
     }
-
     public float dampingScalarFormula()
     {
         return (dampingScalar * getPercentageOfTopSpeed()) + baseDamping;
@@ -279,35 +286,28 @@ public class TankMovement : MonoBehaviour
         return Vector3.SignedAngle(adjustedForward, adjustedDirection, Vector3.up);
     }
 
-    public simulationResult SimulateMovement(Vector3 targetPosition, float stopSpeed = 0, float stopDistance = 10)
+    public simulationResult SimulateMovement(float length = 1)
     {
-        float secondsSimulated = 0;
-        Vector3 changeInPosition = Vector3.zero;
-        Vector3 tempVelocity = getCurrentVelocity();
-        Vector3 moveDirection = tempVelocity.normalized;
-        float passiveDamp = passiveDamping();
-        float tempDampScalar = dampingScalar;
-        float tempTopSpeed = topSpeed;
-        float tempBaseDamping = baseDamping;
-        Vector3 angularDampingScalar = moveDirection * angularDamping * ((Vector3.Angle(moveDirection,
-            getForwardVector())) / 90);
+        Vector3 tempVelocity = currentVelocity;
+        Vector3 positionalChange = new Vector3(0f, 0f, 0f);
 
-        //while the speed is greater than the stopping speed, and the distance from target is greater than the end distance
-        while ((tempVelocity.magnitude > stopSpeed) && (targetPosition - (transform.position + changeInPosition)).magnitude > stopDistance)
+        float damp = passiveDamping();
+        Vector3 tempDir = getMovementDirection();
+
+        tempVelocity -= tempDir * damp * (dampingScalar * (tempVelocity.magnitude / topSpeed) + baseDamping) * length;
+
+        //tempVelocity -= tempDir * angularDampingPower * calculateAngularDamping() * length;
+
+        if (tempVelocity.magnitude < 1)
         {
-            //calculate change in velocity through damping
-            tempVelocity -= moveDirection * passiveDamp * (tempDampScalar * (tempVelocity.magnitude / tempTopSpeed) + tempBaseDamping);
-
-            //calculate change in velocity through angular damping
-            tempVelocity -= angularDampingScalar;
-
-            //add velocity to the change in position
-            changeInPosition += tempVelocity;
-
-            secondsSimulated++;
+            tempVelocity *= 0;
         }
 
-        return new simulationResult(changeInPosition, secondsSimulated, tempVelocity, (targetPosition - (transform.position + changeInPosition)).magnitude);
+        positionalChange += tempVelocity;
+
+        Debug.Log(positionalChange);
+
+        return new simulationResult(positionalChange, length, tempVelocity);
     }
 
     #endregion

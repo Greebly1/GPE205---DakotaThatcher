@@ -34,6 +34,11 @@ public class GameManager : MonoBehaviour {
         players = new List<PlayerController>();
     }
 
+    private void Update()
+    {
+        Debug.Log("FPS last frame = " + 1f / Time.deltaTime);
+    }
+
     private void Start() {
         SpawnPlayer(playerSpawn);
     }
