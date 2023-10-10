@@ -143,13 +143,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8142a4c28c255d6478e95b33c4028836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topSpeed: 80
-  secondsToTopSpeed: 1.5
-  dampingScale: 0.5
+  topSpeed: 100
+  secondsToTopSpeed: 1.3
+  dampingScale: 0.65
   frictionMultiplier: 1
   turnSpeed: 110
-  baseDamping: 1
-  angularDamping: 10
+  baseDamping: 2
+  angularDamping: 2
   turnSpeedCurve:
     serializedVersion: 2
     m_Curve:

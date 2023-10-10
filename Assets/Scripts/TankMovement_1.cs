@@ -39,11 +39,14 @@ public class TankMovement : MonoBehaviour
 
     private void Update()
     {
-        seer = performSimulation(velocity, angularDamping, baseDamping, dampingScale, frictionMultiplier, 0.1f, 0f, 100);
-        Debug.Log("Tank is headed for " + (transform.position + seer.deltaPosition));
-        //Debug.Log("Simulation lasted" + seer.timeSpan);
-       // Debug.Log("Speed = " + speed());
-        Debug.DrawLine(transform.position, transform.position + velocity, Color.red);
+        seer = performSimulation(velocity, transform.forward, angularDamping, baseDamping, dampingScale, frictionMultiplier, 0.06f, 0f, 7);
+
+        Debug.Log("TargetPosition = " + (seer.deltaPosition + transform.position));
+        //Debug.Log("Damping = " + CalculateDamping(Time.deltaTime).magnitude);
+        //Debug.Log("AngularDamping = " + CalculateAngularDamping(Time.deltaTime).magnitude);
+
+        Debug.DrawLine(transform.position, transform.position + seer.deltaPosition, Color.red);
+        Debug.DrawLine(transform.position, transform.position + moveDir()*25, Color.red);
         Debug.DrawLine(transform.position, transform.position + transform.forward * 25, Color.blue);
     }
 
@@ -53,6 +56,7 @@ public class TankMovement : MonoBehaviour
         Vector3 dampingVector = CalculateDamping(Time.fixedDeltaTime);
         Vector3 angularDampingVector = CalculateAngularDamping(Time.fixedDeltaTime);
         acceleration = throttleVector + dampingVector + angularDampingVector;
+        //Debug.Log("amounts" + angularDampingVector.normalized + dampingVector.normalized);
 
         applyAcceleration();
         transform.position += velocity * Time.fixedDeltaTime;
@@ -96,11 +100,11 @@ public class TankMovement : MonoBehaviour
     }
 
     private Vector3 CalculateAngularDamping(float timeStep) {
-        return CalculateAngularDamping(timeStep, moveDir(), transform.forward, angularDamping);
+        return CalculateAngularDamping(timeStep, moveDir(), transform.forward, angularDamping, speed());
 }
-    public Vector3 CalculateAngularDamping(float timeStep, Vector3 direction, Vector3 forward, float angularDampingPower)
+    public Vector3 CalculateAngularDamping(float timeStep, Vector3 direction, Vector3 forward, float angularDampingPower, float currentSpeed)
     {
-        return direction * -1 * angularity(direction, forward) * angularDampingPower * timeStep;
+        return moveDir(direction) * -1 * angularity(direction, forward) * linearFormula(1, currentSpeed, 0) * angularDampingPower * timeStep;
     }
 
     #endregion
@@ -135,6 +139,7 @@ public class TankMovement : MonoBehaviour
     }
     public Vector3 moveDir(Vector3 tempVelocity)
     {
+        if (tempVelocity.magnitude < 0.1f) return Vector3.zero;
         return tempVelocity.normalized;
     }
     public float speed()
@@ -211,6 +216,37 @@ public class TankMovement : MonoBehaviour
         return !isTurningRight(turn);
     }
 
+    public float angleToTarget(Vector3 targetPosition)
+    {
+        return angleToTarget(transform.position, targetPosition, transform.forward);
+    }
+    public float angleToTarget(Vector3 startPosition, Vector3 targetPosition, Vector3 forward)
+    {
+        Vector3 directionToTarget = (startPosition - targetPosition).normalized;
+
+        Vector3 adjustmentVector = new Vector3(1f, 0f, 1f);
+
+        Vector3 adjustedDirection = Vector3.Scale(directionToTarget, adjustmentVector);
+        Vector3 adjustedForward = Vector3.Scale(forward, adjustmentVector) * -1;
+
+        return Vector3.SignedAngle(adjustedForward, adjustedDirection, Vector3.up);
+    }
+
+    public void TurnToTarget(float inputAmount, Vector3 target)
+    {
+        float CurrentAngle = angleToTarget(target);
+        if (CurrentAngle > 0)
+        {
+            turnInput = inputAmount;
+            //Turn Right
+        }
+        else if (CurrentAngle < 0)
+        {
+            turnInput = -inputAmount;
+            //Turn left
+        }
+    }
+
     #endregion
 
     #region braking
@@ -255,20 +291,22 @@ public class TankMovement : MonoBehaviour
         }
     }
 
-    public simulationResult performSimulation(Vector3 startVelocity, float angularDampingStrength, float baseFriction, 
+    public simulationResult performSimulation(Vector3 startVelocity, Vector3 startForward, float angularDampingStrength, float baseFriction, 
         float dampingPower, float frictionPower, float timeStep = 1f, float endVelocity = 0.1f, float length = 10f)
     {
         Vector3 tempVelocity = startVelocity;
         Vector3 movement = Vector3.zero;
         Vector3 moveDir = tempVelocity.normalized;
         float duration = 0f;
+        
 
         while (tempVelocity.magnitude > endVelocity && duration < length)
         {
-
             Vector3 dampingVector = CalculateDamping(timeStep, moveDir, dampingPower, frictionPower, tempVelocity.magnitude, baseFriction, 1);
-            Vector3 angularDampingVector = CalculateAngularDamping(timeStep, moveDir, transform.forward, angularDampingStrength);
+            Vector3 angularDampingVector = CalculateAngularDamping(timeStep, moveDir, startForward, angularDampingStrength, tempVelocity.magnitude);
             Vector3 accel = dampingVector + angularDampingVector;
+
+            if ((tempVelocity + accel).magnitude >= tempVelocity.magnitude) break;
 
             applyAcceleration(0.5f, accel, ref tempVelocity, true);
             movement += tempVelocity * timeStep;

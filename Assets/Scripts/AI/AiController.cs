@@ -53,22 +53,22 @@ public class AiController : Controller
     //Move the tank towards a target this frame
     private void seek(Vector3 targetPosition)
     {
-        //float CurrentAngle = pawnMovement.angleToTarget(targetPosition);
+        float CurrentAngle = pawnMovement.angleToTarget(targetPosition);
         //if the pawn is not facing the targetposition
-        //if ( MathF.Abs(CurrentAngle) > turningErrorMargin)
-        /*{
+        if ( MathF.Abs(CurrentAngle) > turningErrorMargin)
+        {
             float turnPower = 1;
             if (CurrentAngle > 0)
             {
-                pawnMovement.Turn(turnPower);
+                pawnMovement.turnInput = turnPower;
                 //Turn Right
             }
             else if (CurrentAngle < 0)
             {
-                pawnMovement.Turn(turnPower * -1);
+                pawnMovement.turnInput = turnPower * -1;
                 //Turn left
             }
-        } */
+        } else pawnMovement.turnInput = 0;
         //pawnMovement.setThrottle(0.4f);
 
         //if (pawnMovement.SimulateMovement(targetPosition, 0f, 10f).)
