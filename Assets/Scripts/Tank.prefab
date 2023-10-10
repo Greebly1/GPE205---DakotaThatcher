@@ -147,9 +147,9 @@ MonoBehaviour:
   secondsToTopSpeed: 1.3
   dampingScale: 0.65
   frictionMultiplier: 1
-  turnSpeed: 110
+  turnSpeed: 150
   baseDamping: 2
-  angularDamping: 2
+  angularDamping: 1
   turnSpeedCurve:
     serializedVersion: 2
     m_Curve:

@@ -69,7 +69,7 @@ public class AiController : Controller
                 //Turn left
             }
         } else pawnMovement.turnInput = 0;
-        //pawnMovement.setThrottle(0.4f);
+        
 
         //if (pawnMovement.SimulateMovement(targetPosition, 0f, 10f).)
         //accelerate forwards if it will make the movement direction closer to the targetdirection

@@ -39,15 +39,17 @@ public class TankMovement : MonoBehaviour
 
     private void Update()
     {
-        seer = performSimulation(velocity, transform.forward, angularDamping, baseDamping, dampingScale, frictionMultiplier, 0.06f, 0f, 7);
+        seer = performSimulation(0.06f, 0f, Vector3.zero);
 
-        Debug.Log("TargetPosition = " + (seer.deltaPosition + transform.position));
+        //Debug.Log("TargetPosition = " + (seer.deltaPosition + transform.position));
         //Debug.Log("Damping = " + CalculateDamping(Time.deltaTime).magnitude);
         //Debug.Log("AngularDamping = " + CalculateAngularDamping(Time.deltaTime).magnitude);
+        Debug.Log("Angularity Left:" +angularity(Vector3.forward, Vector3.left));
+        Debug.Log("Angularity Back:" + angularity(Vector3.forward, Vector3.back));
 
-        Debug.DrawLine(transform.position, transform.position + seer.deltaPosition, Color.red);
-        Debug.DrawLine(transform.position, transform.position + moveDir()*25, Color.red);
-        Debug.DrawLine(transform.position, transform.position + transform.forward * 25, Color.blue);
+        Debug.DrawLine(transform.position, transform.position + seer.deltaPosition, Color.green);
+        //Debug.DrawLine(transform.position, transform.position + moveDir()*25, Color.red);
+        //Debug.DrawLine(transform.position, transform.position + transform.forward * 25, Color.blue);
     }
 
     private void FixedUpdate()
@@ -123,7 +125,7 @@ public class TankMovement : MonoBehaviour
 
     private void applyTurning(float timeStep)
     {
-        applyTurning(Time.fixedDeltaTime, CalculateTurnPower(), turnDir());
+        applyTurning(timeStep, CalculateTurnPower(), turnDir());
     }
     private void applyTurning(float timeStep, float turnPower, int direction)
     {
@@ -169,7 +171,8 @@ public class TankMovement : MonoBehaviour
     }
     public float angularity(Vector3 direction, Vector3 forward)
     {
-        return Vector3.Angle(direction, forward) / 90;
+        if (Mathf.Abs(Vector3.SignedAngle(forward, direction, Vector3.up)) > 90) return Mathf.Abs(Vector3.SignedAngle(forward*-1, direction, Vector3.up))/90;
+        return Mathf.Abs(Vector3.SignedAngle(forward, direction, Vector3.up))/90;
 
     }
     #endregion
@@ -281,24 +284,32 @@ public class TankMovement : MonoBehaviour
     public struct simulationResult
     {
         public float timeSpan;
+        public float distanceFromTarget;
         public Vector3 endVelocity;
         public Vector3 deltaPosition;
-        public simulationResult(float time, Vector3 finalVelocity, Vector3 positionChange)
+        public simulationResult(float time, float distance, Vector3 finalVelocity, Vector3 positionChange)
         {
             timeSpan = time;
+            distanceFromTarget = distance;
             endVelocity = finalVelocity;
             deltaPosition = positionChange;
         }
     }
 
-    public simulationResult performSimulation(Vector3 startVelocity, Vector3 startForward, float angularDampingStrength, float baseFriction, 
+    public simulationResult performSimulation(float timeStep, float endVelocity, Vector3 target)
+    {
+        return performSimulation(velocity, transform.forward, transform.position, target, angularDamping, baseDamping, dampingScale, frictionMultiplier, timeStep, endVelocity, 8);
+    }
+
+    public simulationResult performSimulation(Vector3 startVelocity, Vector3 startForward, Vector3 currentPosition, Vector3 targetPosition, float angularDampingStrength, float baseFriction, 
         float dampingPower, float frictionPower, float timeStep = 1f, float endVelocity = 0.1f, float length = 10f)
     {
         Vector3 tempVelocity = startVelocity;
         Vector3 movement = Vector3.zero;
         Vector3 moveDir = tempVelocity.normalized;
         float duration = 0f;
-        
+
+        float distanceFromTarget = (targetPosition - currentPosition).magnitude;
 
         while (tempVelocity.magnitude > endVelocity && duration < length)
         {
@@ -313,8 +324,10 @@ public class TankMovement : MonoBehaviour
             applyAcceleration(0.5f, accel, ref tempVelocity, true);
 
             duration += timeStep;
+
+            if (distanceFromTarget < (targetPosition - currentPosition).magnitude) break;
         }
 
-        return new simulationResult(duration, tempVelocity, movement);
+        return new simulationResult(duration, distanceFromTarget, tempVelocity, movement);
     }
 }
