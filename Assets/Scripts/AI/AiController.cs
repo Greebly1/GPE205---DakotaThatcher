@@ -65,7 +65,7 @@ public class AiController : Controller
     {   
         base.Start();
         pawnMovement = pawn.GetComponent<TankMovement>();
-        targetEnemy = GameManager.Game.player.gameObject;
+        targetEnemy = GameManager.Game.player.pawn.gameObject;
     }
 
     // Update is called once per frame
