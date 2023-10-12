@@ -178,6 +178,7 @@ MonoBehaviour:
   throttleInput: 0
   turnInput: 0
   brakeInput: 0
+  targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &8449299126067644008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,5 +255,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 9.545921, y: 6.1379995, z: 19.509706}
-  m_Center: {x: 0.14892292, y: 2.8064632, z: 0.54303265}
+  m_Size: {x: 9.545921, y: 8.40451, z: 19.509706}
+  m_Center: {x: 0.14892292, y: 3.9397187, z: 0.54303265}

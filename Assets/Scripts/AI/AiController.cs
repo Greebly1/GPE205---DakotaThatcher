@@ -2,28 +2,45 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using TMPro;
 using UnityEngine;
 
 public class AiController : Controller
 {
     #region variables
 
-    public TankMovement pawnMovement;
-
-    public float turningErrorMargin;
-    public enum AIState {Guard, Chase, Attack, Return};
-
+    public enum AIState { Idle, Guard, Return, Patrol, Chase, Attack };
     public AIState currentState;
 
-    private float lastStateChange;
-
-    public GameObject target;
-
+    public GameObject AiTargeter;
+    public float turningErrorMargin;
     public float distanceToStartBraking;
+    public float moveToPrecision = 20;
+    public float throttlePower = 1;
+    public GameObject targetEnemy;
+    
 
+    private float lastStateChange;
     private bool useBrakes = false;
+    private float turnPower = 1;
 
-    private Vector3 goalPosition;
+    public float desiredAttackRange = 80;
+
+    public TankMovement pawnMovement;
+
+        #region Guard Variables
+    public Transform guardPost;
+    private bool lastTurnedRight = true;
+    public float guardStateTurnPower = 0.5f;
+        #endregion
+    #region Patrol Variables
+    public Transform[] patrolLocations;
+    private int currentPatrolIndex = 0;
+    private bool forwards = true;
+    public float patrolStateMoveToPrecision = 15;
+    public float patrolThrottlePower = 0.5f;
+    public bool patrolLooping = false;
+    #endregion
 
     public struct simulationResult
     {
@@ -47,8 +64,8 @@ public class AiController : Controller
     public override void Start()
     {   
         base.Start();
-        goalPosition = transform.position;
         pawnMovement = pawn.GetComponent<TankMovement>();
+        targetEnemy = GameManager.Game.player.gameObject;
     }
 
     // Update is called once per frame
@@ -56,16 +73,40 @@ public class AiController : Controller
     {
         base.Update();
 
-        pawnMovement.targetPosition = target.transform.position;
+        makeDecision();
 
-        checkBrakes();
-
-        seek(target.transform.position);
+        pawnMovement.targetPosition = AiTargeter.transform.position;
     }
 
     protected void makeDecision()
     {
-        Debug.Log("decision!");
+        switch (currentState)
+        {
+            case AIState.Idle:
+                //Debug.Log("Idle"); //do nothing
+                doIdleState();
+                break;
+            case AIState.Guard:
+                //Debug.Log("Guard"); //Guard area
+                doGuardState();
+                break;
+            case AIState.Return:
+                Debug.Log("Return"); //move back to guard post
+                doReturnState();
+                break;
+            case AIState.Patrol:
+                Debug.Log("Patrol"); //Move around a designated area
+                doPatrolState();
+                break;
+            case AIState.Chase:
+                Debug.Log("Chase"); //Move to position to fire weapon
+                doChaseState();
+                break;
+            case AIState.Attack:
+                Debug.Log("Attack"); //fire weapon
+                doAttackState();
+                break;
+        }
     }
 
     public virtual void changeState(AIState newstate)
@@ -75,42 +116,98 @@ public class AiController : Controller
 
     }
 
-    //Move the tank towards a target this frame
-    private void seek(Vector3 targetPosition)
+    #region State Actions
+    private void doIdleState()
     {
-        float CurrentAngle = pawnMovement.angleToTarget(targetPosition);
-        //if the pawn is not facing the targetposition
-        if ( MathF.Abs(CurrentAngle) > turningErrorMargin)
+        Debug.Log("Doing idle state");
+    }
+    private void doGuardState()
+    {
+        //Debug.Log("Doing guard state");
+        turnPower = guardStateTurnPower;
+        if (isFacingTarget(AiTargeter.transform.position))
         {
-            float turnPower = 1;
-            if (CurrentAngle > 0)
+            AiTargeter.transform.position = pawn.transform.position + newTurnTarget(170, lastTurnedRight);
+            lastTurnedRight = !lastTurnedRight;
+        }
+        turnTo(AiTargeter.transform.position);
+    }
+    private void doReturnState()
+    {
+        Debug.Log("Doing return state");
+        AiTargeter.transform.position = guardPost.position;
+        seek(AiTargeter.transform.position, moveToPrecision);
+    }
+    private void doPatrolState()
+    {
+        //Debug.Log("Doing patrol state");
+        if (Vector3.Distance(pawn.transform.position, patrolLocations[currentPatrolIndex].transform.position)
+            < 29) {
+            if (patrolLooping & currentPatrolIndex == patrolLocations.Length-1) {
+                currentPatrolIndex = 0;
+            } else if (patrolLooping)
             {
-                pawnMovement.turnInput = turnPower;
-                //Turn Right
+                currentPatrolIndex++;
             }
-            else if (CurrentAngle < 0)
+
+            if (forwards)
             {
-                pawnMovement.turnInput = turnPower * -1;
-                //Turn left
+                if (currentPatrolIndex == patrolLocations.Length - 1)
+                {
+                    forwards = !forwards;
+                    currentPatrolIndex--;
+                } else  currentPatrolIndex++;    
+            } else
+            {
+                if (currentPatrolIndex == 0)
+                {
+                    forwards = !forwards;
+                    currentPatrolIndex++;
+                }
+                else currentPatrolIndex--;
             }
-        } else pawnMovement.turnInput = 0;
+            AiTargeter.transform.position = patrolLocations[currentPatrolIndex].transform.position;
+        } else {
+            checkBrakes();
+            seek(AiTargeter.transform.position, patrolStateMoveToPrecision, patrolThrottlePower, 0.5f);
+        }
+    }
+    private void doChaseState()
+    {
+        Debug.Log("Doing chase state");
+        AiTargeter.transform.position = targetEnemy.transform.position;
+        seek(AiTargeter.transform.position, desiredAttackRange, 0.8f, 1);
+    }
+    private void doAttackState()
+    {
+        Debug.Log("Doing attack state");
+        pawn.GetComponent<Shooter_Cannon>().tryShoot();
+    }
+    #endregion
+
+
+    #region Actions
+    //Move the tank towards a target this frame
+    private void seek(Vector3 targetPosition, float range = 20, float throttle = 1, float brakePower = 1)
+    {
+        turnTo(targetPosition);
 
         //accelerate forwards if it will make the movement direction closer to the targetdirection
-        if (movesCloserToTarget() && !endPositionInRange(20))
+        if (movesCloserToTarget() && !endPositionInRange(range))
         {
-            pawnMovement.throttleInput = 1;
+            pawnMovement.throttleInput = throttle;
         }
         else pawnMovement.throttleInput = 0;
 
 
         //brake if ---- this tank is going to overshoot 
         
-        if (useBrakes && pawnMovement.seer.overShoots && ((target.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude > 20))
+        if (useBrakes && pawnMovement.seer.overShoots && ((AiTargeter.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude > 20))
         {
             //Debug.Log("Overshooting - applying brakes");
-            pawnMovement.brakeInput = 1;
+            pawnMovement.brakeInput = brakePower;
         }
-        else if ((target.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude < 20)
+        else if ((AiTargeter.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude < 20)
         {
             //Debug.Log("Not overshooting - disabling brakes and throttle");
             pawnMovement.throttleInput = 0;
@@ -125,17 +222,51 @@ public class AiController : Controller
     //decides whether to start checking to brake or not
     private void checkBrakes()
     {
-        if (Vector3.Distance(Vector3.Scale(target.transform.position, new Vector3(1,0,1)), Vector3.Scale(pawn.transform.position, new Vector3(1, 0, 1))) < distanceToStartBraking)
+        if (Vector3.Distance(Vector3.Scale(AiTargeter.transform.position, new Vector3(1,0,1)), Vector3.Scale(pawn.transform.position, new Vector3(1, 0, 1))) < distanceToStartBraking)
         {
             useBrakes = true;
         } else useBrakes = false;
     }
 
+    //turn tank to look in a direction
+    private void turnTo(Vector3 targetPosition)
+    {
+        float CurrentAngle = pawnMovement.angleToTarget(targetPosition);
+        //if the pawn is not facing the targetposition
+        if (MathF.Abs(CurrentAngle) > turningErrorMargin)
+        {
+            if (CurrentAngle > 0)
+            {
+                pawnMovement.turnInput = turnPower;
+                //Turn Right
+            }
+            else if (CurrentAngle < 0)
+            {
+                pawnMovement.turnInput = turnPower * -1;
+                //Turn left
+            }
+        }
+        else pawnMovement.turnInput = 0;
+    }
+
+    //generate a new targetPosition for turning to based on an angle provided
+    private Vector3 newTurnTarget(float angle, bool turnLeft = false)
+    {
+        Debug.Log("NewTarget!");
+        if (turnLeft) {
+            Debug.Log("turnleft");
+            return Quaternion.Euler(0, angle, 0) * pawn.transform.forward;
+        } else {
+            Debug.Log("turnright");
+            return Quaternion.Inverse(Quaternion.Euler(0, angle, 0)) * pawn.transform.forward;
+        }
+    }
+    #endregion
+
     #region macros
-    
     private bool endPositionInRange(float range)
     {
-        return (target.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude < range;
+        return (AiTargeter.transform.position - (pawnMovement.seer.deltaPosition + pawn.transform.position)).magnitude < range;
     }
 
     private bool accelerateBool(Vector3 target)
@@ -147,7 +278,7 @@ public class AiController : Controller
 
     private bool movesCloserToTarget()
     {
-        return movesCloserToTarget(pawn.transform.position, pawn.transform.forward, target.transform.position);
+        return movesCloserToTarget(pawn.transform.position, pawn.transform.forward, AiTargeter.transform.position);
     }
     private bool movesCloserToTarget(Vector3 currentPosition, Vector3 forward, Vector3 targetPosition)
     {
@@ -160,7 +291,12 @@ public class AiController : Controller
         }
         return false;
     }
-
+    private bool isFacingTarget(Vector3 target)
+    {
+        float CurrentAngle = pawnMovement.angleToTarget(target);
+        //if the pawn is not facing the targetposition
+        return MathF.Abs(CurrentAngle) < turningErrorMargin;
+    }
     private bool isAccelerationValid(Vector3 goalDirection, Vector3 forwardVector)
     {
         Vector3 newVec = pawnMovement.moveDir() + forwardVector;
@@ -170,21 +306,6 @@ public class AiController : Controller
         }
         return false;
 
-    }
-
-    private Vector3 targetVector(Vector3 targetPosition)
-    {
-        return targetPosition - pawn.transform.position;
-    }
-
-    private Vector3 targetdirection(Vector3 targetPosition)
-    {
-        return targetVector(targetPosition).normalized;
-    }
-
-    private float distanceFromTarget(Vector3 targetPosition)
-    {
-        return targetVector(targetPosition).magnitude;
     }
     #endregion
 }
