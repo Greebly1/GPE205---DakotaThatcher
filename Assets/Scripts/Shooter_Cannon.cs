@@ -12,6 +12,7 @@ public class Shooter_Cannon : Shooter_Base
     // Start is called before the first frame update
     void Awake()
     {
+        
         if (shell_prefab == null)
         {
             Debug.Log("A shooter_cannon does not have a shell prefab");
@@ -37,6 +38,8 @@ public class Shooter_Cannon : Shooter_Base
     private void fire()
     {
         restartCooldown();
+
+        noiseController.
 
         GameObject shell = Instantiate(shell_prefab, gunBarrel.position, gunBarrel.rotation);
 
