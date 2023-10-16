@@ -27,8 +27,16 @@ public class AiController : Controller
 
     public float desiredAttackRange = 80;
 
+
+    public float hearingRange = 50.0f;
+    public float fieldOfView = 50.0f;
+    public float sightRange = 200.0f;
+    public Transform sensesOrigin;
+
     public TankMovement pawnMovement;
     private AiSenses senses;
+
+    
 
         #region Guard Variables
     public Transform guardPost;
@@ -66,8 +74,10 @@ public class AiController : Controller
     public override void Start()
     {   
         base.Start();
+        
         pawnMovement = pawn.GetComponent<TankMovement>();
-        senses = pawn.AddComponent<AiSenses>();
+        if (sensesOrigin != null ) senses = sensesOrigin.gameObject.AddComponent<AiSenses>();
+        
         targetEnemy = GameManager.Game.player.pawn.gameObject;
     }
 
@@ -79,6 +89,8 @@ public class AiController : Controller
         makeDecision();
 
         pawnMovement.targetPosition = AiTargeter.transform.position;
+
+        senses.canSee(targetEnemy);
     }
 
     protected void makeDecision()
