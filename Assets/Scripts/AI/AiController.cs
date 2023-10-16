@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AiController : Controller
@@ -27,6 +28,7 @@ public class AiController : Controller
     public float desiredAttackRange = 80;
 
     public TankMovement pawnMovement;
+    private AiSenses senses;
 
         #region Guard Variables
     public Transform guardPost;
@@ -65,6 +67,7 @@ public class AiController : Controller
     {   
         base.Start();
         pawnMovement = pawn.GetComponent<TankMovement>();
+        senses = pawn.AddComponent<AiSenses>();
         targetEnemy = GameManager.Game.player.pawn.gameObject;
     }
 

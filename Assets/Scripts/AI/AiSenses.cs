@@ -4,20 +4,38 @@ using UnityEngine;
 
 public class AiSenses : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+        #region variables
+    public float hearingRange = 50.0f;
+    private noise.sound lastHeardSound;
+
+    
+    #endregion
+
+        #region Initialize
+    void Awake()
     {
-        noiseMaker.noiseEvent += heardNoise;
+        noise.noiseEvent += handleNoiseEvent;
+    }
+    #endregion
+
+    void handleNoiseEvent(noise.sound soundInfo)
+    {
+        if (soundInfo.volume + hearingRange > Vector3.Distance(soundInfo.location, this.gameObject.transform.position))
+        {
+            lastHeardSound = soundInfo;
+            heardNoise();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void heardNoise()
     {
-        
+        Debug.Log("Heard a noise");
     }
 
-    void heardNoise(GameObject source, float volume, Vector3 position)
+        #region macros
+    public float timeSinceSoundHeard()
     {
-        Debug.Log("heard a noise!");
+        return Time.time - lastHeardSound.time;
     }
+    #endregion
 }

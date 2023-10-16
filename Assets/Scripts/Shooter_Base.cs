@@ -4,14 +4,8 @@ using UnityEngine;
 
 public abstract class Shooter_Base : MonoBehaviour
 {
-    public noiseMaker noisecontroller;
     public Transform gunBarrel;
-    public float damage;
-
-    private void Awake()
-    {
-        noisecontroller = GetComponent<noiseMaker>();
-    }
+    public float damage = 25.0f;
 
     // Update is called once per frame
     void Update()

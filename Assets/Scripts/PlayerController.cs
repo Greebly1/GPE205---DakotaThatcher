@@ -23,7 +23,7 @@ public class PlayerController : Controller {
         input_movement = playerInput.Player.Movement;
         input_brake = playerInput.Player.Brake;
         input_fire1 = playerInput.Player.Fire1;
-        OnEnable();
+        enableInput();
     }
     
     public override void Start() {
@@ -67,7 +67,7 @@ public class PlayerController : Controller {
     /// <summary>
     /// Enable all input and bind functions to input events
     /// </summary>
-    public void OnEnable() {
+    public void enableInput() {
         input_movement.Enable();
 
         input_brake.Enable();
@@ -80,7 +80,7 @@ public class PlayerController : Controller {
     /// <summary>
     /// Disable all input and unbind functions to input events
     /// </summary>
-    public void OnDisable()
+    public void disableInput()
     {
         input_movement.Disable();
 

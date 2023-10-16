@@ -5,9 +5,10 @@ using UnityEngine;
 public class Shooter_Cannon : Shooter_Base
 {
     public GameObject shell_prefab;
-    public float fireCooldown;
+    public float fireCooldown = 1.0f;
+    public float cannonVolume = 10.0f;
 
-    private float FireCooldownTimer;
+    private float FireCooldownTimer = 0.0f;
     
     // Start is called before the first frame update
     void Awake()
@@ -39,7 +40,7 @@ public class Shooter_Cannon : Shooter_Base
     {
         restartCooldown();
 
-        noiseController.
+        noise.noiseEvent.Invoke(new noise.sound(this.gameObject, cannonVolume, this.transform.position, Time.time));
 
         GameObject shell = Instantiate(shell_prefab, gunBarrel.position, gunBarrel.rotation);
 

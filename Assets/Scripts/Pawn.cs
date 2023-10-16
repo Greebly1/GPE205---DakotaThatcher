@@ -23,16 +23,8 @@ public abstract class Pawn : MonoBehaviour {
         }
 
         moveComponent = GetComponent<TankMovement>();
-        if (moveComponent == null)
-        {
-            Debug.Log("pawn does not have a move component");
-        }
 
         Health health = GetComponent<Health>();
-        if (healthComponent == null)
-        {
-            Debug.Log("pawn does not have a Health component");
-        }
     }
 
     // Start is called before the first frame update
