@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using TMPro;
+using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -19,8 +20,9 @@ public class AiController : Controller
     public float moveToPrecision = 20;
     public float throttlePower = 1;
     public GameObject targetEnemy;
-    
 
+    public float defaultTurnPower = 1;
+    public float defaultThrottlePower = 1;
     private float lastStateChange;
     private bool useBrakes = false;
     private float turnPower = 1;
@@ -36,21 +38,33 @@ public class AiController : Controller
     public TankMovement pawnMovement;
     private AiSenses senses;
 
-    
-
         #region Guard Variables
     public Transform guardPost;
     private bool lastTurnedRight = true;
     public float guardStateTurnPower = 0.5f;
-        #endregion
+    private bool startingGuardState = false;
+    #endregion
+    #region Return Variables
+    public float returnStateTurnPower = 1;
+    public float returnStateThrottlePower = 1;
+    public float returnStateMoveToPrecision = 20.0f;
+    #endregion
+
     #region Patrol Variables
     public Transform[] patrolLocations;
     private int currentPatrolIndex = 0;
     private bool forwards = true;
     public float patrolStateMoveToPrecision = 15;
-    public float patrolThrottlePower = 0.5f;
+    public float patrolStateTurnPower = 1;
+    public float patrolStateThrottlePower = 0.5f;
     public bool patrolLooping = false;
     #endregion
+    #region Chase Variables
+    public float chaseStateThrottlePower = 1;
+    public float chaseStateTurnPower = 1;
+
+    #endregion
+
 
     public struct simulationResult
     {
@@ -93,7 +107,7 @@ public class AiController : Controller
         senses.canSee(targetEnemy);
     }
 
-    protected void makeDecision()
+    protected virtual void makeDecision()
     {
         switch (currentState)
         {
@@ -106,19 +120,19 @@ public class AiController : Controller
                 doGuardState();
                 break;
             case AIState.Return:
-                Debug.Log("Return"); //move back to guard post
+                //Debug.Log("Return"); //move back to guard post
                 doReturnState();
                 break;
             case AIState.Patrol:
-                Debug.Log("Patrol"); //Move around a designated area
+                //Debug.Log("Patrol"); //Move around a designated area
                 doPatrolState();
                 break;
             case AIState.Chase:
-                Debug.Log("Chase"); //Move to position to fire weapon
+                //Debug.Log("Chase"); //Move to position to fire weapon
                 doChaseState();
                 break;
             case AIState.Attack:
-                Debug.Log("Attack"); //fire weapon
+                //Debug.Log("Attack"); //fire weapon
                 doAttackState();
                 break;
         }
@@ -126,35 +140,96 @@ public class AiController : Controller
 
     public virtual void changeState(AIState newstate)
     {
+        if (currentState == newstate) return;
+        switch (currentState)
+        {
+            case AIState.Idle:
+                //Debug.Log("Idle"); //do nothing
+                onBeginIdle();
+                break;
+            case AIState.Guard:
+                //Debug.Log("Guard"); //Guard area
+                onBeginGuard();
+                break;
+            case AIState.Return:
+                //Debug.Log("Return"); //move back to guard post
+                onBeginReturn();
+                break;
+            case AIState.Patrol:
+                //Debug.Log("Patrol"); //Move around a designated area
+                onBeginPatrol();
+                break;
+            case AIState.Chase:
+                //Debug.Log("Chase"); //Move to position to fire weapon
+                onBeginChase();
+                break;
+            case AIState.Attack:
+                //Debug.Log("Attack"); //fire weapon
+                onBeginAttack();
+                break;
+        }
+
         currentState = newstate;
         lastStateChange = Time.time;
 
+        switch (currentState)
+        {
+            case AIState.Idle:
+                //Debug.Log("Idle"); //do nothing
+                onLeaveIdle();
+                break;
+            case AIState.Guard:
+                //Debug.Log("Guard"); //Guard area
+                onLeaveGuard();
+                break;
+            case AIState.Return:
+                //Debug.Log("Return"); //move back to guard post
+                onLeaveReturn();
+                break;
+            case AIState.Patrol:
+                //Debug.Log("Patrol"); //Move around a designated area
+                onLeavePatrol();
+                break;
+            case AIState.Chase:
+                //Debug.Log("Chase"); //Move to position to fire weapon
+                onLeaveChase();
+                break;
+            case AIState.Attack:
+                //Debug.Log("Attack"); //fire weapon
+                onLeaveAttack();
+                break;
+        }
     }
 
     #region State Actions
     private void doIdleState()
     {
-        Debug.Log("Doing idle state");
+        //Debug.Log("Doing idle state");
     }
     private void doGuardState()
     {
+        float turnAmount = 170.0f;
+        if (startingGuardState)
+        {
+            turnAmount /= 2;
+        }
         //Debug.Log("Doing guard state");
-        turnPower = guardStateTurnPower;
         if (isFacingTarget(AiTargeter.transform.position))
         {
-            AiTargeter.transform.position = pawn.transform.position + newTurnTarget(170, lastTurnedRight);
+            AiTargeter.transform.position = pawn.transform.position + newTurnTarget(turnAmount, lastTurnedRight);
             lastTurnedRight = !lastTurnedRight;
         }
         turnTo(AiTargeter.transform.position);
     }
     private void doReturnState()
     {
-        Debug.Log("Doing return state");
+        //Debug.Log("Doing return state");
         AiTargeter.transform.position = guardPost.position;
         seek(AiTargeter.transform.position, moveToPrecision);
     }
     private void doPatrolState()
     {
+        
         //Debug.Log("Doing patrol state");
         if (Vector3.Distance(pawn.transform.position, patrolLocations[currentPatrolIndex].transform.position)
             < 29) {
@@ -184,22 +259,81 @@ public class AiController : Controller
             AiTargeter.transform.position = patrolLocations[currentPatrolIndex].transform.position;
         } else {
             checkBrakes();
-            seek(AiTargeter.transform.position, patrolStateMoveToPrecision, patrolThrottlePower, 0.5f);
+            seek(AiTargeter.transform.position, patrolStateMoveToPrecision, patrolStateThrottlePower, 0.5f);
         }
     }
     private void doChaseState()
     {
-        Debug.Log("Doing chase state");
+        //Debug.Log("Doing chase state");
         AiTargeter.transform.position = targetEnemy.transform.position;
         seek(AiTargeter.transform.position, desiredAttackRange, 0.8f, 1);
     }
     private void doAttackState()
     {
-        Debug.Log("Doing attack state");
+        //Debug.Log("Doing attack state");
         pawn.GetComponent<Shooter_Cannon>().tryShoot();
     }
     #endregion
 
+    #region State Initializers
+    protected virtual void onBeginIdle()
+    {
+        //Debug.Log("Do nothing");
+    }
+
+    //Set guard state movement variables & turn 90 degrees to the right
+    protected virtual void onBeginGuard()
+    {
+        startingGuardState = true;
+        turnPower = guardStateTurnPower;
+    }
+    protected virtual void onBeginReturn()
+    {
+        turnPower = returnStateTurnPower;
+        throttlePower = returnStateThrottlePower;
+        moveToPrecision = returnStateMoveToPrecision;
+    }
+    protected virtual void onBeginPatrol()
+    {
+        currentPatrolIndex = 0;
+    }
+    protected virtual void onBeginChase()
+    {
+        throttlePower = chaseStateThrottlePower;
+        turnPower = chaseStateTurnPower;
+    }
+    protected virtual void onBeginAttack()
+    {
+        //Debug.Log("Do nothing");
+    }
+    #endregion
+
+    #region State Endings
+    protected virtual void onLeaveIdle()
+    {
+        setDefaultMovementValues();
+    }
+    protected virtual void onLeaveGuard()
+    {
+        setDefaultMovementValues();
+    }
+    protected virtual void onLeaveReturn()
+    {
+        setDefaultMovementValues();
+    }
+    protected virtual void onLeavePatrol()
+    {
+        setDefaultMovementValues();
+    }
+    protected virtual void onLeaveChase()
+    {
+        setDefaultMovementValues();
+    }
+    protected virtual void onLeaveAttack()
+    {
+        setDefaultMovementValues();
+    }
+    #endregion
 
     #region Actions
     //Move the tank towards a target this frame
@@ -321,6 +455,11 @@ public class AiController : Controller
         }
         return false;
 
+    }
+    private void setDefaultMovementValues()
+    {
+        throttlePower = defaultThrottlePower;
+        turnPower = defaultTurnPower;
     }
     #endregion
 }

@@ -67,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -541,7 +544,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6266032628786016798, guid: 6f53b0393aca22e4e9d4d607981804cd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -4.727267
+      value: -2.2
       objectReference: {fileID: 0}
     - target: {fileID: 6266032628786016798, guid: 6f53b0393aca22e4e9d4d607981804cd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -661,13 +664,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pawn: {fileID: 1194880792}
-  currentState: 4
+  currentState: 3
   AiTargeter: {fileID: 425720777}
   turningErrorMargin: 4
   distanceToStartBraking: 50
   moveToPrecision: 20
   throttlePower: 1
   targetEnemy: {fileID: 0}
+  defaultTurnPower: 1
+  defaultThrottlePower: 1
   desiredAttackRange: 80
   hearingRange: 50
   fieldOfView: 50
@@ -676,14 +681,20 @@ MonoBehaviour:
   pawnMovement: {fileID: 0}
   guardPost: {fileID: 1178307862}
   guardStateTurnPower: 0.5
+  returnStateTurnPower: 1
+  returnStateThrottlePower: 1
+  returnStateMoveToPrecision: 20
   patrolLocations:
   - {fileID: 1188134305}
   - {fileID: 797824016}
   - {fileID: 1673657241}
   - {fileID: 1010425510}
   patrolStateMoveToPrecision: 15
-  patrolThrottlePower: 0.5
+  patrolStateTurnPower: 1
+  patrolStateThrottlePower: 0.5
   patrolLooping: 0
+  chaseStateThrottlePower: 1
+  chaseStateTurnPower: 1
 --- !u!4 &1526933306
 Transform:
   m_ObjectHideFlags: 0

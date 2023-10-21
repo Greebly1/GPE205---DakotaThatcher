@@ -42,11 +42,11 @@ public class AiSenses : MonoBehaviour
         float targetAngle = Vector3.Angle(forward, targetDirection);
         if (targetAngle <= fieldOfView && Vector3.Distance(this.transform.position, target.transform.position) <= sightRange)
         {
-            Debug.Log("target within field of view");
+            //Debug.Log("target within field of view");
             RaycastHit hitinfo;
             if (Physics.Raycast(transform.position, (target.transform.position - transform.position).normalized, out hitinfo) && hitinfo.collider.gameObject == target)
             {
-                Debug.Log("sees the target");
+                //Debug.Log("sees the target");
                 return true;
             }
         }
@@ -55,7 +55,7 @@ public class AiSenses : MonoBehaviour
 
     private void heardNoise()
     {
-        Debug.Log("Heard a noise");
+        //Debug.Log("Heard a noise");
     }
 
         #region macros
