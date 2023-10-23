@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,7 +10,7 @@ public class AiSenses : MonoBehaviour
     public float fieldOfView = 50.0f;
     public float sightRange = 100.0f;
     private noise.sound lastHeardSound;
-
+    public Action heardSound = delegate { };
 
 
     #endregion
@@ -56,6 +57,7 @@ public class AiSenses : MonoBehaviour
     private void heardNoise()
     {
         //Debug.Log("Heard a noise");
+        heardSound.Invoke();
     }
 
         #region macros
