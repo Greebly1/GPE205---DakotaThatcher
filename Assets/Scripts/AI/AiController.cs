@@ -92,13 +92,18 @@ public class AiController : Controller
         pawnMovement = pawn.GetComponent<TankMovement>();
         if (sensesOrigin != null ) senses = sensesOrigin.gameObject.AddComponent<AiSenses>();
         
-        targetEnemy = GameManager.Game.player.pawn.gameObject;
+        
     }
 
     // Update is called once per frame
     public override void Update()
     {
         base.Update();
+
+        if(targetEnemy == null)
+        {
+            targetEnemy = GameManager.Game.player.pawn.gameObject;
+        }
 
         makeDecision();
 

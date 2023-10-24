@@ -1,17 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public abstract class Pawn : MonoBehaviour {
 
     #region variables
 
-
     Rigidbody rb;
 
     TankMovement moveComponent;
 
     Health healthComponent;
+
+    public Action pawnDestroyed = delegate { };
     #endregion
 
     public virtual void Awake()
@@ -40,5 +43,12 @@ public abstract class Pawn : MonoBehaviour {
     public TankMovement GetMovement()
     {
         return moveComponent;
+    }
+
+    public virtual void OnDestroy()
+    {
+        Debug.Log("destroyed!");
+        pawnDestroyed.Invoke();
+        
     }
 }

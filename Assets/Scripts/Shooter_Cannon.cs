@@ -52,6 +52,12 @@ public class Shooter_Cannon : Shooter_Base
     {
         return FireCooldownTimer < 0;
     }
+
+    public bool cantFire()
+    {
+        return !canFire();
+    }
+
     private void restartCooldown()
     {
         FireCooldownTimer = fireCooldown;

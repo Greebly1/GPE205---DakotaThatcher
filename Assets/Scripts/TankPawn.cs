@@ -21,6 +21,11 @@ public class TankPawn : Pawn
     public override void Update() {
         base.Update();
     }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+    }
     #endregion
 
 }

@@ -24,6 +24,8 @@ public class AiStateMachine
     /// </summary>
     public void Tick()
     {
+        //Debug.Log("State machine in " + _currentState.stateName());
+
         Transition nextTransition = GetTransition(); //try to get a new transition
         if (nextTransition != null) //set the new state if we found a transition
             SetState(nextTransition.To);
@@ -40,6 +42,7 @@ public class AiStateMachine
     /// <param name="newState">The new state to change to</param>
     public void SetState(IState newState)
     {
+        Debug.Log("setting state to " + newState.stateName());
         if (_currentState == newState || newState == null) return; //don't do anything unless the newState is a different state
 
         _currentState?.onEnd(); //End the current state
@@ -62,6 +65,7 @@ public class AiStateMachine
     /// <param name="condition">True when the transition should happen</param>
     public void AddTransition(IState from, IState to, Func<bool> condition)
     {
+        Debug.Log("Added a transition from the " + from.stateName() + " To the " + to.stateName());
         //create an empty list of transitions if this state has no transition list
         if(_transitions.TryGetValue(from.stateName(), out var transition) == false) {
             transition = new List<Transition>();
