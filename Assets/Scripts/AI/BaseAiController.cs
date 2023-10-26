@@ -73,6 +73,13 @@ public class BaseAiController : Controller
         //targetEnemy = GameManager.Game.player.pawn.gameObject;
 
         tankGun = pawn.GetComponent<Shooter_Cannon>();
+
+        GameManager.Game.enemyAIs.Add(this);
+    }
+
+    public void OnDestroy()
+    {
+        GameManager.Game.enemyAIs.Remove(this);
     }
 
 

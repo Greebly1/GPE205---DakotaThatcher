@@ -60,7 +60,12 @@ public class AiSenses : MonoBehaviour
         heardSound.Invoke();
     }
 
-        #region macros
+    public void OnDestroy()
+    {
+        noise.noiseEvent -= handleNoiseEvent;
+    }
+
+    #region macros
     public float timeSinceSoundHeard()
     {
         return Time.time - lastHeardSound.time;

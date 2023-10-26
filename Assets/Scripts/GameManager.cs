@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour {
     public PlayerController player;
 
     public List<PlayerController> players;
+    public List<BaseAiController> enemyAIs;
+    public List<BaseAiController> friendlyAIs;
     #endregion
 
     // Awake called before the game starts
