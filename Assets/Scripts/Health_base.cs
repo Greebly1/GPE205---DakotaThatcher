@@ -8,7 +8,7 @@ public class Health : MonoBehaviour
 
     [SerializeField] private float spawnHealth;
 
-    private float currentHealth;
+    public float currentHealth;
 
 
     // Start is called before the first frame update
@@ -31,6 +31,12 @@ public class Health : MonoBehaviour
         clampHealth();
     }
 
+    public void heal(float amount)
+    {
+        currentHealth += amount;
+        clampHealth();
+    }
+
     private void checkDeath()
     {
         if (currentHealth < 0)
@@ -43,4 +49,6 @@ public class Health : MonoBehaviour
     {
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
     }
+
+    public float getHealth() { return currentHealth; }
 }

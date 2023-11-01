@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 3403908551077608290}
   - component: {fileID: 6472005321168813646}
   - component: {fileID: 8009929968309892210}
+  - component: {fileID: 6119239415431166192}
+  - component: {fileID: 3018670695127297582}
   m_Layer: 0
   m_Name: TankVer1
   m_TagString: Untagged
@@ -113,13 +115,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8142a4c28c255d6478e95b33c4028836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topSpeed: 100
-  secondsToTopSpeed: 1.3
-  dampingScale: 0.7
-  frictionMultiplier: 1.2
-  turnSpeed: 100
-  baseDamping: 2
-  angularDamping: 2
+  moveVars:
+    topSpeed: 100
+    secondsToTopSpeed: 2
+    dampingScale: 1
+    frictionMultiplier: 1.4
+    turnSpeed: 100
+    baseDamping: 3
+    angularDamping: 1.3
   turnSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -179,7 +182,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  spawnHealth: 100
+  spawnHealth: 2
+  currentHealth: 0
+--- !u!114 &6119239415431166192
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 377728378214556212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67a134c2280b44a4c84ec027fbdaddc7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3018670695127297582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 377728378214556212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0184d04c72486a342af05dbe4e4c69a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxCoins: 12
+  currentCoins: 0
 --- !u!1 &1278261223212635637
 GameObject:
   m_ObjectHideFlags: 0

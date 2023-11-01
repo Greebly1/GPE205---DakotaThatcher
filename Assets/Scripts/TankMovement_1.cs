@@ -5,14 +5,33 @@ using UnityEngine.UIElements;
 
 public class TankMovement : MonoBehaviour
 {
-    //inspector variables & constants
-    public float topSpeed = 80f;
-    public float secondsToTopSpeed = 2f;
-    public float dampingScale = 1f;
-    public float frictionMultiplier = 1.7f;
-    public float turnSpeed;
-    public float baseDamping = 5f;
-    public float angularDamping = 1f;
+
+    [System.Serializable]
+    public struct movementValues
+    {
+        public float topSpeed;
+        public float secondsToTopSpeed;
+        public float dampingScale;
+        public float frictionMultiplier;
+        public float turnSpeed;
+        public float baseDamping;
+        public float angularDamping;
+
+        public movementValues(float TopSpeed = 80, float SecondsToTopSpeed = 2, float DampingScale = 1,
+            float FrictionMultiplier = 1.7f, float TurnSpeed = 120, float BaseDamping = 5, float AngularDamping = 1)
+        {
+            topSpeed = TopSpeed;
+            secondsToTopSpeed = SecondsToTopSpeed;
+            dampingScale = DampingScale;
+            frictionMultiplier = FrictionMultiplier;
+            turnSpeed = TurnSpeed;
+            baseDamping = BaseDamping;
+            angularDamping = AngularDamping;
+        }
+    }
+
+    public movementValues moveVars;
+
     [SerializeField] private AnimationCurve turnSpeedCurve;
     public float brakePower;
     private float throttlePower;
@@ -39,8 +58,10 @@ public class TankMovement : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        throttlePower = (topSpeed / secondsToTopSpeed);
+        CalculateThrottlePower();
     }
+
+    public void CalculateThrottlePower() {throttlePower = (moveVars.topSpeed / moveVars.secondsToTopSpeed); }
 
     private void Update()
     {
@@ -79,7 +100,7 @@ public class TankMovement : MonoBehaviour
         if(onGround)
         {
             tempVelocity += accelerationAmount * timePartition;
-            tempVelocity = Vector3.ClampMagnitude(tempVelocity, topSpeed);
+            tempVelocity = Vector3.ClampMagnitude(tempVelocity, moveVars.topSpeed);
             if (speed(tempVelocity) < 0.1)
             {
                 tempVelocity *= 0;
@@ -99,7 +120,7 @@ public class TankMovement : MonoBehaviour
 
     private Vector3 CalculateDamping(float timeStep)
     {
-        return CalculateDamping(timeStep, moveDir(), dampingScale, frictionMultiplier, speed(), baseDamping, CalculateBrakePower());
+        return CalculateDamping(timeStep, moveDir(), moveVars.dampingScale, moveVars.frictionMultiplier, speed(), moveVars.baseDamping, CalculateBrakePower());
     }
     public Vector3 CalculateDamping(float timeStep, Vector3 direction, float dampingPower, float frictionPower, float currentSpeed, float baseFriction, float brakePower)
     {
@@ -107,7 +128,7 @@ public class TankMovement : MonoBehaviour
     }
 
     private Vector3 CalculateAngularDamping(float timeStep) {
-        return CalculateAngularDamping(timeStep, moveDir(), transform.forward, angularDamping, speed());
+        return CalculateAngularDamping(timeStep, moveDir(), transform.forward, moveVars.angularDamping, speed());
 }
     public Vector3 CalculateAngularDamping(float timeStep, Vector3 direction, Vector3 forward, float angularDampingPower, float currentSpeed)
     {
@@ -120,7 +141,7 @@ public class TankMovement : MonoBehaviour
 
     public float CalculateTurnPower()
     {
-        return CalculateTurnPower(turnInput, turnSpeed, velocity, topSpeed);
+        return CalculateTurnPower(turnInput, moveVars.turnSpeed, velocity, moveVars.topSpeed);
     }
 
     public float CalculateTurnPower(float turn, float maxTurnSpeed, Vector3 tempVelocity, float maxSpeed)
@@ -160,7 +181,7 @@ public class TankMovement : MonoBehaviour
 
     public float speedPercent()
     {
-        return speedPercent(speed(velocity), topSpeed);
+        return speedPercent(speed(velocity), moveVars.topSpeed);
     }
     public float speedPercent(Vector3 tempVelocity, float maxSpeed)
     {
@@ -283,7 +304,7 @@ public class TankMovement : MonoBehaviour
     }
     public float friction()
     {
-        return linearFormula(frictionMultiplier, speed(), baseDamping);
+        return linearFormula(moveVars.frictionMultiplier, speed(), moveVars.baseDamping);
     }
 
     public struct simulationResult
@@ -305,7 +326,7 @@ public class TankMovement : MonoBehaviour
 
     public simulationResult performSimulation(float timeStep, float endVelocity, Vector3 target)
     {
-        return performSimulation(velocity, transform.forward, transform.position, target, angularDamping, baseDamping, dampingScale, frictionMultiplier, timeStep, endVelocity, 8);
+        return performSimulation(velocity, transform.forward, transform.position, target, moveVars.angularDamping, moveVars.baseDamping, moveVars.dampingScale, moveVars.frictionMultiplier, timeStep, endVelocity, 8);
     }
 
     public simulationResult performSimulation(Vector3 startVelocity, Vector3 startForward, Vector3 currentPosition, Vector3 targetPosition, float angularDampingStrength, float baseFriction, 
