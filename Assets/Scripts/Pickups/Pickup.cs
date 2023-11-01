@@ -6,6 +6,8 @@ public class Pickup : MonoBehaviour
 {
     public effectFactory Factory;
 
+    public bool destroyOnPickup = true;
+
     private void OnTriggerEnter(Collider other)
     {
         EffectReceiver receiver = other.gameObject.GetComponent<EffectReceiver>();
@@ -14,6 +16,7 @@ public class Pickup : MonoBehaviour
             Effect tempEffect = Factory.createEffect(other.gameObject);
             if (tempEffect.canApply()) {
                doPickup(receiver, tempEffect);
+                if (destroyOnPickup) { destroyPickup(); }
             }
         }
     }
@@ -23,5 +26,10 @@ public class Pickup : MonoBehaviour
     {
         //Debug.Log("Apply this effect from the pickup");
         target.addEffect(newEffect);
+    }
+
+    private void destroyPickup()
+    {
+        Destroy(gameObject);
     }
 }

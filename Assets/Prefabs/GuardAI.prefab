@@ -478,13 +478,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8142a4c28c255d6478e95b33c4028836, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topSpeed: 100
-  secondsToTopSpeed: 1.3
-  dampingScale: 0.7
-  frictionMultiplier: 1.2
-  turnSpeed: 100
-  baseDamping: 2
-  angularDamping: 2
+  moveVars:
+    topSpeed: 100
+    secondsToTopSpeed: 3
+    dampingScale: 2
+    frictionMultiplier: 1.7
+    turnSpeed: 80
+    baseDamping: 3
+    angularDamping: 1
   turnSpeedCurve:
     serializedVersion: 2
     m_Curve:
@@ -545,6 +546,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   spawnHealth: 100
+  currentHealth: 0
 --- !u!1 &7900021965644594914
 GameObject:
   m_ObjectHideFlags: 0

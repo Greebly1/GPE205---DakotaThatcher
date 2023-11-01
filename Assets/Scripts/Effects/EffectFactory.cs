@@ -19,6 +19,8 @@ public class effectFactory
 
     public float healAmount;
 
+    public int moneyAmount;
+
     public Effect createEffect(GameObject target)
     {
         switch (factoryEffect)
@@ -36,7 +38,7 @@ public class effectFactory
                 return new Effect_Speed(target, newMoveVars, effectLength);
             case Effects.money:
                 //Debug.Log("Money effect created");
-                return new Effect_Money(target, 5);
+                return new Effect_Money(target, moneyAmount);
 
         }
         return new Effect_Test(target);
