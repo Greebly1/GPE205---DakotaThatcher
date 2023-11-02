@@ -32,6 +32,11 @@ public class Shell : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
+        if (other.isTrigger)
+        {
+            return;
+        }
+
         Health otherHealth = other.GetComponent<Health>();
         if (otherHealth != null)
         {
