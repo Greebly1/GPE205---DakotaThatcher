@@ -14,7 +14,6 @@ public class GameManager : MonoBehaviour {
     public GameObject prefab_playerController;
     public GameObject prefab_playerPawn;
     public GameObject prefab_playerCamera;
-    public Transform playerSpawn;
     public Transform playerCameraOffset;
 
     public PlayerController player;
@@ -42,7 +41,6 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Start() {
-        SpawnPlayer(playerSpawn);
     }
 
     /// <summary>
