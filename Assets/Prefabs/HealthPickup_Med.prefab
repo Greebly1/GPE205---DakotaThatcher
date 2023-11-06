@@ -193,6 +193,8 @@ MonoBehaviour:
       angularDamping: 1
     effectLength: 5
     healAmount: 50
+    moneyAmount: 0
+  destroyOnPickup: 1
 --- !u!135 &2442892882063496749
 SphereCollider:
   m_ObjectHideFlags: 0

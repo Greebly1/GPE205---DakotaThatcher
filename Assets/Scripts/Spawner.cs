@@ -9,7 +9,7 @@ public class Spawner : MonoBehaviour
     private GameObject currentObject;
 
     [SerializeField] private int spawnCount = 3;
-    private int currentSpawnCount = 3;
+    private int currentSpawnCount;
 
     [SerializeField] private bool endless = false;
 
@@ -17,7 +17,7 @@ public class Spawner : MonoBehaviour
     [SerializeField] private float timeBetweenSpawns = 3.0f;
 
     private float nextSpawnTime;
-    public enum spawnerState {spawned, spawntimer}
+    public enum spawnerState { spawned, spawntimer }
 
     private spawnerState _currentState;
 
@@ -33,9 +33,9 @@ public class Spawner : MonoBehaviour
     /// </summary>
     private void spawn()
     {
-        if (currentSpawnCount < 0 || endless)
+        if (currentSpawnCount > 0 || endless)
         {
-            currentObject = Instantiate(spawnPrefab, this.gameObject.transform);
+            currentObject = Instantiate(spawnPrefab, this.gameObject.transform.position, this.gameObject.transform.rotation);
             _currentState = spawnerState.spawned;
             currentSpawnCount--;
         }  else
@@ -67,7 +67,7 @@ public class Spawner : MonoBehaviour
 
     private void checkObject()
     {
-        if (currentObject != null)
+        if (currentObject == null)
         {
             _currentState = spawnerState.spawntimer;
             nextSpawnTime = Time.time + timeBetweenSpawns;

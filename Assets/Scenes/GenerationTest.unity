@@ -152,10 +152,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60d3f59ce5e619d4b935cf861b1e5f73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPrefab: {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
+  startPrefab: {fileID: 121816, guid: f7f38235d9f1f814a82a25b89781a289, type: 3}
   tilePrefab: {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
-  endPrefab: {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
-  emptyTilePrefab: {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
+  endPrefab: {fileID: 0}
+  emptyTilePrefab: {fileID: 0}
   X_Min: 0
   Y_Min: 0
 --- !u!4 &104288501

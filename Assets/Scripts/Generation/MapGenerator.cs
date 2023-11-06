@@ -4,24 +4,32 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 
 /// <summary>
-/// This is a monolith, I have lots of plans for refactoring but I probably won't refactor this unless we do more with generation\
+/// This is a pretty monolithic script, I have lots of plans for refactoring but I probably won't refactor this unless we do more with generation\
 /// Instead of creating an empty 2D array then flling it with random tiles,
 /// 
 /// This generator creates a 2D array containing a single start/spwan tile,
-/// Then uses genThreads (not actually multithreaded) to create a random direction,
-/// The genthreads expand the 2D map array if it needs to be expanded
-/// The genthreads move into this new coordinate and place a random tile prefab into this index
-/// When a genthread creates a new tile it opens its door in the correct location
-/// Additionally, if a genthread moves into a tile that isn't empty it will open its door instead of replacing it with a new tile
+/// Then uses custom genpath objects to create a random direction,
+/// The genpaths expand the 2D map array if it needs to be expanded
+/// The genpaths move into this new coordinate and place a random tile prefab into this index
+/// When a genpath creates a new tile it opens its door in the correct location
+/// Additionally, if a genpath moves into a tile that isn't empty it will open its door instead of replacing it with a new tile
 /// 
-/// This continues until the genthread placed enough tiles.
-/// Finally a special genThread is ran and places a endTile as its last tile
+/// This continues until the genpath placed enough tiles.
+/// Finally the last tile placed by the first genpath is always an endTile
 /// 
-/// Now the 2D tile array is filled with prefabs
+/// Now the 2D tile array is filled with tiles (i created a tile struct to encapsulate prefab information with the coordinates and door information)
 /// The mapgenerator instantiates these prefabs using the data stored in them to;
 /// 1 - Instantiate the tile in the correct world space position (using the x and y coordinate stored in the tile)
 /// 2 - Open the correct doors (using a doorstate list stored inside the tile)
 /// 
+/// 
+/// Using this system it is possible to create multiple special generation paths that branch off one another.
+/// This system ensures all tiles are reachable and doesn't instantiate level geometry in places the player can't reach
+/// Its possible to create custom rooms such as hidden rooms or locked rooms that the door must be destroyed to find
+/// 
+/// It's also possible to have custom genpaths that will 100% lead to certain rooms. So with enter the gungeon as an example, each dungeon can
+/// generate with two chestroom genpaths, that each end with a chestroom.
+/// We could also lock the end room behind a locked door and require the player to track down the key from the special genpath that ends in a key room.
 /// </summary>
 
 
@@ -50,9 +58,9 @@ public class MapGenerator : MonoBehaviour
         X_Min = 0;
         Y_Min = 0;
         
-        genThread generation = new genThread(this, new Vector2Int(0,0));
+        genPath generation = new genPath(this, new Vector2Int(0,0));
 
-        generation.runThread();
+        generation.runPathGen();
 
         InstantiateMap();
     }
@@ -60,7 +68,7 @@ public class MapGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        logMap();
+        //logMap();
     }
 
     // Instantiates each tile in the 2D map array ONLY EXECUTE THIS METHOD ONCE
@@ -70,7 +78,10 @@ public class MapGenerator : MonoBehaviour
         {
             foreach(Tile _tile in column)
             {
-                if (_tile._prefab != null) { Instantiate(_tile._prefab, _tile.getTilePosition(), Quaternion.identity); }
+                if (_tile._prefab != null) { 
+                    GameObject temp = Instantiate(_tile._prefab, _tile.getTilePosition(), Quaternion.identity);
+                    temp.GetComponent<Room>().setDoors(_tile.doors);
+                }
             }
         }
     }
@@ -102,12 +113,12 @@ public class MapGenerator : MonoBehaviour
             if (x > X_Max())
             {
                 map.Add(column);
-                Debug.Log("Added a new column");
+                //Debug.Log("Added a new column");
             } else if (x < X_Min)
             {
                 map.Insert(0, column);
                 X_Min--;
-                Debug.Log("inserted a new column");
+                //Debug.Log("inserted a new column");
             } else
             {
                 Debug.Log("Somehow tryAddColumn failed with x of: " + x);
@@ -124,12 +135,12 @@ public class MapGenerator : MonoBehaviour
             if ( y > Y_Max())
             {
                 addRow(y);
-                Debug.Log("Added a new row");
+                //Debug.Log("Added a new row");
             } else if ( y < Y_Min)
             {
                 insertRow(y);
                 Y_Min--;
-                Debug.Log("Inserted a new row");
+                //Debug.Log("Inserted a new row");
             } else
             {
                 Debug.Log("Somehow tryAddRow failed with y of: " + y);
@@ -163,10 +174,10 @@ public class MapGenerator : MonoBehaviour
         
         if (X_Min <= x && x <= X_Max())
         {
-            Debug.Log("X of: " + x + " is valid");
+            //Debug.Log("X of: " + x + " is valid");
             return true;
         }
-        Debug.Log("X of: " + x + " is not valid");
+        //Debug.Log("X of: " + x + " is not valid");
         return false;
     }
 
@@ -175,10 +186,10 @@ public class MapGenerator : MonoBehaviour
     {
         if(Y_Min <= y && y <= Y_Max())
         {
-            Debug.Log("Y of: " + y + " is valid");
+           //Debug.Log("Y of: " + y + " is valid");
             return true;
         }
-        Debug.Log("Y of: " + y + " is not valid");
+        //Debug.Log("Y of: " + y + " is not valid");
         return false;
     }
 
@@ -234,16 +245,29 @@ public class MapGenerator : MonoBehaviour
                 case 0:
                     switch (y)
                     {
-                        case -1: return 1;
-                        case 1: return 3;
+                        case -1: return 3;
+                        case 1: return 1;
                     }
-                    Debug.Log("IntFromDir failed, x = " + x + " y = " + y);
+                    Debug.LogWarning("IntFromDir failed, x = " + x + " y = " + y);
                     return 1;
                 case 1: return 2;
             }
-            Debug.Log("IntFromDir failed, x = " + x + " y = " + y);
+            Debug.LogWarning("IntFromDir failed, x = " + x + " y = " + y);
             return 1;
         }
+
+        static public int flipDirection (int direction)
+    {
+        switch (direction)
+        {
+            case 1: return 3;
+            case 2: return 4;
+            case 3: return 1;
+            case 4: return 2;
+        }
+        Debug.LogWarning("Flipdirection failed with direction " + direction);
+        return 1;
+    }
 
         // There are two types of xy value pairs.
         // Coordinates which represent a possibly negative coordinate on a coordinate plane
@@ -267,8 +291,7 @@ public class MapGenerator : MonoBehaviour
     #endregion
 }
 
-//This is not an actual thread, but it could be thought of as something similar
-public class genThread
+public class genPath
 {
     MapGenerator _generator;
     Vector2Int coordinates;
@@ -276,7 +299,7 @@ public class genThread
     int maxRandomChecks = 5;
     bool inNewTile = false;
 
-    public genThread (MapGenerator generator, Vector2Int startCoordinates)
+    public genPath (MapGenerator generator, Vector2Int startCoordinates)
     {
         coordinates = startCoordinates;
         _generator = generator;
@@ -300,6 +323,9 @@ public class genThread
 
     private void move(Vector2Int direction)
     {
+        _generator.map[_generator.X_ToIndex(coordinates.x)][_generator.Y_ToIndex(coordinates.y)].setDoorState(MapGenerator.intFromDir(direction), DoorState.open);
+
+        
         coordinates  += direction;
         lastDirection = MapGenerator.intFromDir(direction);
 
@@ -313,8 +339,12 @@ public class genThread
         if (_generator.map[mapIndex.x][mapIndex.y]._prefab == _generator.emptyTilePrefab)
         {
             newTile(mapIndex);
-        } else
+            _generator.map[_generator.X_ToIndex(coordinates.x)][_generator.Y_ToIndex(coordinates.y)].setDoorState(MapGenerator.flipDirection(MapGenerator.intFromDir(direction)), DoorState.open);
+        }
+        else
         {
+            _generator.map[_generator.X_ToIndex(coordinates.x)][_generator.Y_ToIndex(coordinates.y)].setDoorState(MapGenerator.flipDirection(MapGenerator.intFromDir(direction)), DoorState.open);
+
             inNewTile = false;
         }
     }
@@ -326,16 +356,24 @@ public class genThread
         inNewTile = true;
     }
 
-    public void runThread()
+    public void runPathGen()
     {
+        //yea this is pretty ugly but it works and I'm running out of time. I'll most likely refactor this later
         move(randomDirection());
-
         move(randomDirection());
-
         move(randomDirection());
-
         move(randomDirection());
-
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
+        move(randomDirection());
         move(randomDirection());
     }
 }
@@ -343,47 +381,27 @@ public class genThread
 /// <summary>
 /// A tile contains, a prefab for a gameobject with a room component.
 /// It also contains a x and y coordinate.
-/// and it contains directional information for which doors to open.
+/// and it contains directional information for which doors to open. The array index+1 represents a cardinal direction
 /// </summary>
 public struct Tile
 {
     public GameObject _prefab { get; }
     public int _x { get; }
     public int _y {  get; }
-    DoorsStates _doors;
+    public DoorState[] doors;
 
     public Tile (GameObject prefab, int x, int y)
     {
         _prefab = prefab;
         _x = x;
         _y = y;
-        _doors = new DoorsStates();
+        doors = new DoorState[4];
     }
 
     public Vector3 getTilePosition() { return new Vector3(_x * 50 ,0,_y * 50 ); }
     public void setDoorState(int doorDirection, DoorState state)
     {
-        _doors.states[doorDirection] = state;
-    }
-}
-
-/// <summary>
-/// A 4 index array of doorstates each index representing a cardinal direction
-/// </summary>
-public struct DoorsStates
-{
-    public List <DoorState> states;
-
-    public DoorsStates (DoorState updoor = DoorState.closed, DoorState rightdoor = DoorState.closed, 
-        DoorState downdoor = DoorState.closed, DoorState leftdoor = DoorState.closed)
-    {
-        states = new List<DoorState>
-        {
-            updoor,
-            rightdoor,
-            downdoor,
-            leftdoor
-        };
+        doors[doorDirection-1] = state;
     }
 }
 
