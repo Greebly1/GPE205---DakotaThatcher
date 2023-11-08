@@ -120,7 +120,7 @@ MonoBehaviour:
     secondsToTopSpeed: 2
     dampingScale: 1
     frictionMultiplier: 1.4
-    turnSpeed: 100
+    turnSpeed: 120
     baseDamping: 3
     angularDamping: 1.3
   turnSpeedCurve:
