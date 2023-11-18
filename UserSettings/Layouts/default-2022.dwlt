@@ -119,7 +119,7 @@ MonoBehaviour:
   m_MinSize: {x: 300, y: 100}
   m_MaxSize: {x: 24288, y: 16192}
   vertical: 0
-  controlID: 38
+  controlID: 84
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -189,8 +189,8 @@ MonoBehaviour:
     y: 0
     width: 379
     height: 613
-  m_MinSize: {x: 201, y: 221}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 200, y: 200}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 13}
   m_Panes:
   - {fileID: 13}
@@ -270,8 +270,8 @@ MonoBehaviour:
     y: 0
     width: 384
     height: 947
-  m_MinSize: {x: 276, y: 71}
-  m_MaxSize: {x: 4001, y: 4021}
+  m_MinSize: {x: 275, y: 50}
+  m_MaxSize: {x: 4000, y: 4000}
   m_ActualView: {fileID: 18}
   m_Panes:
   - {fileID: 18}
@@ -620,9 +620,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -9.781618, y: 196.8267, z: 1.3891865}
+    m_Target: {x: 98.46482, y: 43.5456, z: -29.021982}
     speed: 2
-    m_Value: {x: -9.781618, y: 196.8267, z: 1.3891865}
+    m_Value: {x: 98.46482, y: 43.5456, z: -29.021982}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -668,20 +668,20 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.31422782, y: 0.68128324, z: -0.5140446, w: -0.41512057}
+    m_Target: {x: 0.10874284, y: 0.2006664, z: -0.022521896, w: 0.973049}
     speed: 2
-    m_Value: {x: -0.31493682, y: 0.68069786, z: -0.5152066, w: -0.41476187}
+    m_Value: {x: 0.10880787, y: 0.19926405, z: -0.022365203, w: 0.97362953}
   m_Size:
-    m_Target: 4.131006
+    m_Target: 10
     speed: 2
-    m_Value: 4.131006
+    m_Value: 10
   m_Ortho:
     m_Target: 0
     speed: 2
     m_Value: 0
   m_CameraSettings:
-    m_Speed: 1.8209002
-    m_SpeedNormalized: 0.9100001
+    m_Speed: 2
+    m_SpeedNormalized: 1
     m_SpeedMin: 0.01
     m_SpeedMax: 2
     m_EasingEnabled: 1
@@ -736,9 +736,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 820e0000
+      m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: 18b5feff8cfbfeff2600ffff4803ffff5804ffffd462ffff5c63ffffe463ffff7264fffffa64ffff8265ffff3e69ffff6289ffffea89ffff788affffb69affff3e9bffffcc9bffff549cffffdc9cffff92a0ffff1aa1ffffa8a1ffff30a2ffffc8afffff50b0ffffd8b0ffff66b1ffff1ab5ffffa2b5ffff2ab6ffffb8b6ffff6cbafffff4baffff7cbbffff0abcfffffec0ffff86c1ffff14c2ffff18c6ffffa0c6ffff2ec7ffffeccfffff7ad0ffff1ed5ffffa6d5ffff34d6ffff24daffffacdaffff34dbffffc2dbffff12e0ffff9ae0ffff22e1ffffb0e1ffff64e9ffffece9ffffc2edffff44f4ffffd2f4ffff5af5ffff2cfbffff
+      m_ExpandedIDs: b2f2feff4027fffff46cffff746dffff6cb9ffff2cfbfffff4ffffff68680000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -939,7 +939,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/Generation
+    - Assets/Scripts
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -947,16 +947,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scripts/Generation
+  - Assets/Scripts
   m_LastFoldersGridSize: -1
   m_LastProjectPath: C:\Users\Me\Documents\GPE205---DakotaThatcher
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
     scrollPos: {x: 0, y: 0}
-    m_SelectedIDs: ba5e0000
-    m_LastClickedID: 24250
-    m_ExpandedIDs: 000000004c5e00004e5e0000505e0000525e0000545e0000a85e000000ca9a3b
+    m_SelectedIDs: 4e5e0000
+    m_LastClickedID: 24142
+    m_ExpandedIDs: 000000004e5e0000505e0000525e0000545e0000565e0000f25e000000ca9a3b
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -984,7 +984,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000004c5e00004e5e0000505e0000525e0000545e0000
+    m_ExpandedIDs: 000000004e5e0000505e0000525e0000545e0000565e0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 

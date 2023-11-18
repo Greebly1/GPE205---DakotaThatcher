@@ -5,11 +5,12 @@ using UnityEngine;
 public abstract class Controller : MonoBehaviour {
 
     public Pawn pawn;
-    
-    public virtual void Init(Pawn possessedPawn) {
+
+    public virtual void Init(Pawn possessedPawn, int id)
+    {
         pawn = possessedPawn;
         pawn.pawnDestroyed += death;
-        Debug.Log("Controller initialized");
+        Debug.Log("pawn set");
     }
     
     // Start is called before the first frame update
@@ -20,7 +21,7 @@ public abstract class Controller : MonoBehaviour {
     // Update is called once per frame
     public virtual void Update() { }
 
-    public void death()
+    public virtual void death()
     {
         Debug.Log("Destroying game object");
         Destroy(gameObject);

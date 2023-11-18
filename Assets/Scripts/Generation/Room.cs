@@ -34,4 +34,9 @@ public class Room : MonoBehaviour {
 		}
 		
 	}
+
+    public void kill()
+    {
+        Destroy(this.gameObject);
+    }
 }

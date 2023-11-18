@@ -20,7 +20,7 @@ public class AI_Scout : BaseAiController
             targetEnemy = GameManager.Game.player.pawn.gameObject;
 
             patrolState = new PatrolState(this, patrolLocations, AiTargeter);
-            chaseState = new ChaseState(this, AiTargeter, targetEnemy);
+            chaseState = new ChaseState(this, AiTargeter);
             attackState = new AttackState(this, tankGun);
 
             createTransition(chaseState, patrolState, seesPlayer);

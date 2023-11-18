@@ -67,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -150,11 +153,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startPrefab: {fileID: 121816, guid: f7f38235d9f1f814a82a25b89781a289, type: 3}
-  tilePrefab: {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
+  tilePrefabs:
+  - {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
+  - {fileID: 121816, guid: c3053873ba73b614b83c510989af0a5d, type: 3}
+  - {fileID: 121816, guid: 5de1c37dbf4ff174a97127f7ea132057, type: 3}
   endPrefab: {fileID: 0}
+  tilePrefab: {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
   emptyTilePrefab: {fileID: 0}
-  X_Min: 0
-  Y_Min: 0
 --- !u!4 &104288501
 Transform:
   m_ObjectHideFlags: 0
@@ -405,7 +410,6 @@ MonoBehaviour:
   player: {fileID: 0}
   players: []
   enemyAIs: []
-  friendlyAIs: []
 --- !u!4 &1836499496
 Transform:
   m_ObjectHideFlags: 0

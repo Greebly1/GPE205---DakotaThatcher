@@ -8,14 +8,11 @@ public class ChaseState : IState
 
     private BaseAiController _controller;
     private GameObject AiTargeter;
-    private GameObject targetEnemy;
 
-    public ChaseState(BaseAiController controller, GameObject aiTargeter, GameObject TargetEnemy)
+    public ChaseState(BaseAiController controller, GameObject aiTargeter)
     {
         _controller = controller;
-        AiTargeter = aiTargeter;
-        targetEnemy = TargetEnemy;
-    }
+        AiTargeter = aiTargeter;    }
 
     void IState.onBegin()
     {
@@ -36,9 +33,9 @@ public class ChaseState : IState
     void IState.tick()
     {
         //Debug.Log("Doing chase state");
-        if (targetEnemy != null)
+        if (_controller.targetEnemy != null)
         {
-            AiTargeter.transform.position = targetEnemy.transform.position;
+            AiTargeter.transform.position = _controller.targetEnemy.transform.position;
         }
         else
         {

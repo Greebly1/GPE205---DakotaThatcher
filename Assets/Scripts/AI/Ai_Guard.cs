@@ -29,7 +29,7 @@ public class Ai_Guard : BaseAiController
 
             guardState = new GuardState(this,AiTargeter);
             returnState = new ReturnState(this, AiTargeter, _guardPost);
-            chaseState = new ChaseState(this, AiTargeter, targetEnemy);
+            chaseState = new ChaseState(this, AiTargeter);
             attackState = new AttackState(this, tankGun);
 
             createTransition(guardState, returnState, isAtPost);

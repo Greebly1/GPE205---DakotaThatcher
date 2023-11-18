@@ -10,6 +10,7 @@ public class BaseAiController : Controller
     public float distanceToStartBraking;
     public float moveToPrecision = 20;
     public float throttlePower = 1;
+
     public GameObject targetEnemy;
 
     public float defaultTurnPower = 1;
@@ -25,7 +26,7 @@ public class BaseAiController : Controller
     public Transform sensesOrigin;
 
     public TankMovement pawnMovement;
-    private AiSenses senses;
+    public AiSenses senses;
 
     public Shooter_Cannon tankGun;
 
@@ -53,9 +54,9 @@ public class BaseAiController : Controller
 
     #endregion
 
-    public override void Init(Pawn possessedPawn)
+    public override void Init(Pawn possessedPawn, int id)
     {
-        base.Init(possessedPawn);
+        base.Init(possessedPawn, id);
     }
 
     // Start is called before the first frame update
@@ -80,6 +81,7 @@ public class BaseAiController : Controller
     public void OnDestroy()
     {
         GameManager.Game.enemyAIs.Remove(this);
+        Destroy(AiTargeter );
     }
 
 
@@ -180,7 +182,16 @@ public class BaseAiController : Controller
 
     public bool seesPlayer()
     {
-        return senses.canSee(targetEnemy);
+        foreach (PlayerController enemy in GameManager.Game.players)
+        {
+            if (senses.canSee(enemy.gameObject))
+            {
+                targetEnemy = enemy.gameObject;
+                return true;
+            }
+        }
+        targetEnemy = null;
+        return false;
     }
 
     public bool isFacing(Vector3 target)
@@ -201,6 +212,7 @@ public class BaseAiController : Controller
 
     public bool canAttack()
     {
+        if (targetEnemy == null) { return false; }
         bool inRange = inFireRange(targetEnemy.transform.position); //target is within firing range       
         bool canfire = tankGun.canFire(); //the pawn's gun can fire
         bool aiming_at_target = isFacing(targetEnemy.transform.position); //this pawn is aiming at the target

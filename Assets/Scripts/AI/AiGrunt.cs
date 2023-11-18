@@ -10,26 +10,29 @@ public class AiGrunt : BaseAiController
 
     public override void Start()
     {
-        base.Start();       
+        base.Start();
+
+        idleState = new IdleState(this);
+        chaseState = new ChaseState(this, this.AiTargeter);
+        attackState = new AttackState(this, this.tankGun);
+
+        createTransition(attackState, chaseState, canAttack);
+        createTransition(chaseState, attackState, tankGun.cantFire);
+
+        stateMachine.SetState(idleState);
+
+        senses.sawEnemy += seenEnemy;
     }
 
     public override void Update()
     {
-        if (targetEnemy == null)
-        {
-            targetEnemy = GameManager.Game.player.pawn.gameObject;
-
-            idleState = new IdleState(this);
-            chaseState = new ChaseState(this, this.AiTargeter, this.targetEnemy);
-            attackState = new AttackState(this, this.tankGun);
-
-            createTransition(chaseState, idleState, seesPlayer);
-            createTransition(attackState, chaseState, canAttack);
-            createTransition(chaseState, attackState, tankGun.cantFire);
-
-            stateMachine.SetState(idleState);
-        }
 
         stateMachine.Tick();
+    }
+
+    public void seenEnemy(GameObject target)
+    {
+        targetEnemy = target;
+        stateMachine.SetState(chaseState);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -33,42 +34,31 @@ using UnityEngine;
 /// </summary>
 
 
-
 public class MapGenerator : MonoBehaviour
 {
     public List<List<Tile>> map;
 
     public GameObject startPrefab;
-    public GameObject tilePrefab;
+    public List<GameObject> tilePrefabs;
     public GameObject endPrefab;
+    public GameObject tilePrefab;
     public GameObject emptyTilePrefab;
 
-    public int X_Min;
-    public int Y_Min;
+    private int X_Min;
+    private int Y_Min;
 
-    private void Awake()
+    private Action killMap;
+
+    public void Awake()
     {
-        map = new List<List<Tile>>();
-        List<Tile> column = new List<Tile>();
-        map.Add(column);
-
-        Tile startTile = new Tile(startPrefab, 0, 0);
-
-        map[0].Add(startTile);
-        X_Min = 0;
-        Y_Min = 0;
-        
-        genPath generation = new genPath(this, new Vector2Int(0,0));
-
-        generation.runPathGen();
-
-        InstantiateMap();
+        //Generate();
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void Generate()
     {
-        //logMap();
+        resetMap();
+        fillMap();
+        InstantiateMap();
     }
 
     // Instantiates each tile in the 2D map array ONLY EXECUTE THIS METHOD ONCE
@@ -80,13 +70,19 @@ public class MapGenerator : MonoBehaviour
             {
                 if (_tile._prefab != null) { 
                     GameObject temp = Instantiate(_tile._prefab, _tile.getTilePosition(), Quaternion.identity);
-                    temp.GetComponent<Room>().setDoors(_tile.doors);
+                    Room tempRoom = temp.GetComponent<Room>();
+                    tempRoom.setDoors(_tile.doors);
+                    killMap += tempRoom.kill;
                 }
             }
         }
     }
 
-
+    public void destroyMap()
+    {
+        killMap?.Invoke();
+        killMap = delegate { };
+    }
 
     #region map methods
 
@@ -210,6 +206,29 @@ public class MapGenerator : MonoBehaviour
 
     public Tile empty(int x, int y) { return new Tile(emptyTilePrefab, x, y); }
 
+    public void fillMap()
+    {
+
+        genPath generation = new genPath(this, new Vector2Int(0, 0));
+
+        generation.runPathGen();
+    }
+
+    public void resetMap()
+    {
+
+        //put an empty map inside the map container
+        map = new List<List<Tile>>();
+        List<Tile> column = new List<Tile>();
+        map.Add(column);
+
+        Tile startTile = new Tile(startPrefab, 0, 0);
+        map[0].Add(startTile); //add the starter tile
+
+        X_Min = 0;
+        Y_Min = 0;
+    }
+
 
     #region macros
     //I know these aren't actually macros but I am using them to make my code more readable
@@ -293,6 +312,10 @@ public class MapGenerator : MonoBehaviour
 
 public class genPath
 {
+    int mapsize = 12;
+    int tilesGenerated = 0;
+    bool endTilePlaced = false;
+
     MapGenerator _generator;
     Vector2Int coordinates;
     int lastDirection;
@@ -305,12 +328,19 @@ public class genPath
         _generator = generator;
     }
 
+    private Tile randomTile(int x, int y)
+    {
+        int randTile = UnityEngine.Random.Range(0, _generator.tilePrefabs.Count);
+        Debug.Log(randTile);
+        return new Tile(_generator.tilePrefabs[randTile], x, y);
+    }
+
     private Vector2Int randomDirection()
     {
-        int randDir = Random.Range(1, 5);
+        int randDir = UnityEngine.Random.Range(1, 5);
         for (int randomGenerations = 1; randDir == lastDirection && randomGenerations < maxRandomChecks; randomGenerations++)
         {
-            randDir = Random.Range(1, 5);
+            randDir = UnityEngine.Random.Range(1, 5);
         }
 
         if (randDir == lastDirection)
@@ -331,50 +361,56 @@ public class genPath
 
         _generator.tryAddColumn(coordinates.x);
         _generator.tryAddRow(coordinates.y);
+    }
 
+    delegate Tile tileToPlace(int x, int y);
+    private void checkCoordinates(tileToPlace tilemethod)
+    {
         //_generator.logMap();
         Vector2Int mapIndex = _generator.coordsToIndex(coordinates);
 
 
         if (_generator.map[mapIndex.x][mapIndex.y]._prefab == _generator.emptyTilePrefab)
         {
-            newTile(mapIndex);
-            _generator.map[_generator.X_ToIndex(coordinates.x)][_generator.Y_ToIndex(coordinates.y)].setDoorState(MapGenerator.flipDirection(MapGenerator.intFromDir(direction)), DoorState.open);
+            newTile(mapIndex, tilemethod);
+            _generator.map[_generator.X_ToIndex(coordinates.x)][_generator.Y_ToIndex(coordinates.y)].setDoorState(MapGenerator.flipDirection(lastDirection), DoorState.open);
+            inNewTile = true;
         }
         else
         {
-            _generator.map[_generator.X_ToIndex(coordinates.x)][_generator.Y_ToIndex(coordinates.y)].setDoorState(MapGenerator.flipDirection(MapGenerator.intFromDir(direction)), DoorState.open);
+            _generator.map[_generator.X_ToIndex(coordinates.x)][_generator.Y_ToIndex(coordinates.y)].setDoorState(MapGenerator.flipDirection(lastDirection), DoorState.open);
 
             inNewTile = false;
         }
     }
 
-    private void newTile(Vector2Int index)
+    private void newTile(Vector2Int index, tileToPlace tileMethod)
     {
-        Tile basetile = new Tile(_generator.tilePrefab, coordinates.x, coordinates.y);
+        Tile basetile = tileMethod(coordinates.x, coordinates.y);
         _generator.map[index.x][index.y] = basetile;
-        inNewTile = true;
+        tilesGenerated++;
+    }
+
+    private Tile finalTile(int x, int y)
+    {
+        endTilePlaced = true;
+        return new Tile(_generator.endPrefab, x, y);
     }
 
     public void runPathGen()
     {
         //yea this is pretty ugly but it works and I'm running out of time. I'll most likely refactor this later
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
-        move(randomDirection());
+        while (tilesGenerated < mapsize)
+        {
+            move(randomDirection());
+            checkCoordinates(randomTile);
+        }
+
+        while (!endTilePlaced)
+        {
+            move(randomDirection());
+            checkCoordinates(finalTile);
+        }
     }
 }
 

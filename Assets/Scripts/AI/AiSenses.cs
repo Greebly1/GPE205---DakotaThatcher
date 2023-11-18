@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum sightState { seesEnemy, doesNotSeeEnemy}
+
 public class AiSenses : MonoBehaviour
 {
         #region variables
@@ -11,7 +13,9 @@ public class AiSenses : MonoBehaviour
     public float sightRange = 100.0f;
     private noise.sound lastHeardSound;
     public Action heardSound = delegate { };
+    public Action<GameObject> sawEnemy = delegate { };
 
+    public sightState _sightstate;
 
     #endregion
 
@@ -20,9 +24,28 @@ public class AiSenses : MonoBehaviour
     private void Update()
     {
         //Debug.DrawLine(this.transform.position, this.transform.position + getTurretForward() * 25, Color.yellow);
+        foreach (PlayerController player in GameManager.Game.players)
+        {
+            //Debug.Log(GameManager.Game.players.Count);
+            if (canSee(player.pawn.gameObject))
+            {
+                switch (_sightstate)
+                {
+                    case sightState.seesEnemy:
+                        break;
+                    case sightState.doesNotSeeEnemy:
+                        sawEnemy.Invoke(player.pawn.gameObject);
+                        Debug.Log("Saw player");
+                        _sightstate = sightState.seesEnemy;
+                        break;
+                }
+                
+            } else { _sightstate = sightState.doesNotSeeEnemy; }
+        }
     }
     void Awake()
     {
+        _sightstate = sightState.doesNotSeeEnemy;
         noise.noiseEvent += handleNoiseEvent;
     }
     #endregion

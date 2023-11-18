@@ -6,6 +6,6 @@ public class PlayerSpawn : MonoBehaviour
 {
     private void Start()
     {
-        GameManager.Game.SpawnPlayer(this.transform);
+        GameManager.Game.SpawnPlayer(this.transform, GameManager.Game.players.Count);
     }
 }

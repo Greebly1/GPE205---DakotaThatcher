@@ -5,9 +5,15 @@ using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 
+public enum playerState { alive, dead}
+
+
 [System.Serializable]
 public class PlayerController : Controller {
 
+    public int playerID { get; private set; }
+
+    private playerState state;
     private PlayerInput playerInput;
     private InputAction input_movement;
     private InputAction input_brake;
@@ -16,32 +22,38 @@ public class PlayerController : Controller {
     // Start is called before the first frame update
 
     #region start/update
-    public override void Init(Pawn possessedPawn) {
-        base.Init(possessedPawn);
+    public override void Init(Pawn possessedPawn, int ID) {
+        base.Init(possessedPawn, ID);
+        state = playerState.alive;
         pawnMovement = pawn.GetComponent<TankMovement>();
         playerInput = new PlayerInput();
         input_movement = playerInput.Player.Movement;
         input_brake = playerInput.Player.Brake;
         input_fire1 = playerInput.Player.Fire1;
+        playerID = ID;
         enableInput();
     }
     
     public override void Start() {
         base.Start();   
 
-        if (GameManager.Game != null)
-        {
-            GameManager.Game.players.Add(this);
-        }
     }
 
     // Update is called once per frame
     public override void Update() {
-        base.Update();
-        pawnMovement.brakeInput = (input_brake.ReadValue<float>());
-
-        pawnMovement.throttleInput = input_movement.ReadValue<Vector2>().y;
-        pawnMovement.turnInput = (input_movement.ReadValue<Vector2>().x);
+        switch (state)
+        {
+            case playerState.alive:
+                base.Update();
+                pawnMovement.brakeInput = (input_brake.ReadValue<float>());
+                pawnMovement.throttleInput = input_movement.ReadValue<Vector2>().y;
+                pawnMovement.turnInput = (input_movement.ReadValue<Vector2>().x);
+                break;
+            case playerState.dead:
+                base.Update();
+                break;
+        }
+       
     }
 
     private void mouse1(InputAction.CallbackContext context)
@@ -99,4 +111,11 @@ public class PlayerController : Controller {
     }
 
     #endregion
+
+    public override void death()
+    {
+        state = playerState.dead;
+        disableInput();
+    
+    }
 }
