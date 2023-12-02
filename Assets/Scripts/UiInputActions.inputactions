@@ -1,0 +1,110 @@
+{
+    "name": "UiInputActions",
+    "maps": [
+        {
+            "name": "TitleScreen",
+            "id": "b894e865-3d8e-4b0b-8af4-89d3747fbcaf",
+            "actions": [
+                {
+                    "name": "Submit",
+                    "type": "Button",
+                    "id": "f0daebd8-901f-46a2-9d95-c873b9b91815",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "3444e0bb-b867-447e-ab5a-940c658bd8db",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Submit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "MenuScreen",
+            "id": "53c0baf5-8033-4629-ac17-556ab81f2773",
+            "actions": [
+                {
+                    "name": "Quit",
+                    "type": "Button",
+                    "id": "b290efc9-d4a3-4100-b4b7-2ba0310434a8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Play",
+                    "type": "Button",
+                    "id": "7ed8f03f-c1a7-4370-937e-be00cb5831ab",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "26065cdb-0e1e-43e9-901b-bdf80bd4222e",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quit",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f56521a1-c1fd-4a74-bd2f-4911e65e5e75",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Play",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "GameOverScreen",
+            "id": "6e7d8b02-ba6f-4e6e-891b-12521909d5ec",
+            "actions": [
+                {
+                    "name": "Return",
+                    "type": "Button",
+                    "id": "cfcbfd82-c896-43af-b3cd-a220e4868a19",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "7de42e59-16ed-47cb-9029-90f354ab43f0",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Return",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

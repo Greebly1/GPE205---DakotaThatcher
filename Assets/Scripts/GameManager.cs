@@ -162,11 +162,9 @@ public class GameManager : MonoBehaviour {
         }
         foreach (PlayerController player in players)
         {
-            Destroy(player.pawn.gameObject);
+            if(player.pawn != null) Destroy(player.pawn.gameObject);
             Destroy(player.gameObject);
         }
-        Destroy(player1.pawn.gameObject);
-        Destroy(player1.gameObject);
         enemyAIs = new List<BaseAiController>();
     }
 
