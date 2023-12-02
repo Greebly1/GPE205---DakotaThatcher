@@ -22,6 +22,7 @@ public class AiGrunt : BaseAiController
         stateMachine.SetState(idleState);
 
         senses.sawEnemy += seenEnemy;
+        senses.lostEnemy += enemyGone;
     }
 
     public override void Update()
@@ -30,9 +31,44 @@ public class AiGrunt : BaseAiController
         stateMachine.Tick();
     }
 
-    public void seenEnemy(GameObject target)
+    public void enemyGone(List<PlayerController> targets)
     {
-        targetEnemy = target;
-        stateMachine.SetState(chaseState);
+        Debug.Log("enemygone executed" + targets);
+        switch (targets.Count)
+        {
+            case 0:
+                targetEnemy = null;
+                stateMachine.SetState(idleState);
+                break;
+            case 1:
+                targetEnemy = targets[0].pawn.gameObject;
+                stateMachine.SetState(chaseState);
+                break;
+            case 2: //this code block should never execute
+                Debug.LogWarning("The ai targeter is executing enemy gone, but it's target list has both players in it");
+                targetEnemy = targets[0].pawn.gameObject;
+                stateMachine.SetState(chaseState);
+                break;
+        }
+
+        
+    }
+
+    public void seenEnemy(List<PlayerController> targets)
+    {
+        Debug.Log("seenEnemy executed" + targets);
+        switch (targets.Count)
+        {
+            case 0: //This code block should never execute
+                Debug.LogWarning("The ai targeter is executing seenEnemy, but it's target list is empty"); 
+                return; //early out if no enemies
+            case 1:
+                targetEnemy = targets[0].pawn.gameObject;
+                stateMachine.SetState(chaseState);
+                break;
+            case 2:
+                targetEnemy = targets[0].pawn.gameObject;
+                break;
+        } 
     }
 }

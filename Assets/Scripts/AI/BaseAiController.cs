@@ -54,9 +54,9 @@ public class BaseAiController : Controller
 
     #endregion
 
-    public override void Init(Pawn possessedPawn, int id)
+    public override void InitPawn(Pawn possessedPawn)
     {
-        base.Init(possessedPawn, id);
+        base.InitPawn(possessedPawn);
     }
 
     // Start is called before the first frame update

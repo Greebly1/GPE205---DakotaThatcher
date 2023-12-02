@@ -6,10 +6,9 @@ public abstract class Controller : MonoBehaviour {
 
     public Pawn pawn;
 
-    public virtual void Init(Pawn possessedPawn, int id)
+    public virtual void InitPawn(Pawn possessedPawn)
     {
         pawn = possessedPawn;
-        pawn.pawnDestroyed += death;
         Debug.Log("pawn set");
     }
     

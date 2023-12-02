@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 public enum playerState { alive, dead}
 
@@ -11,32 +12,30 @@ public enum playerState { alive, dead}
 [System.Serializable]
 public class PlayerController : Controller {
 
-    public int playerID { get; private set; }
-
     private playerState state;
-    private PlayerInput playerInput;
-    private InputAction input_movement;
-    private InputAction input_brake;
-    private InputAction input_fire1;
+    private PlayerInput inputAsset;
     private TankMovement pawnMovement;
+
+    [SerializeField] Camera playerCam;
+    [HideInInspector] public PlayerSpawn spawner;
     // Start is called before the first frame update
 
     #region start/update
-    public override void Init(Pawn possessedPawn, int ID) {
-        base.Init(possessedPawn, ID);
+    public override void InitPawn(Pawn possessedPawn) {
+        base.InitPawn(possessedPawn);
         state = playerState.alive;
+        inputAsset.SwitchCurrentActionMap("Player");
+        possessedPawn.pawnDestroyed += death;
+
         pawnMovement = pawn.GetComponent<TankMovement>();
-        playerInput = new PlayerInput();
-        input_movement = playerInput.Player.Movement;
-        input_brake = playerInput.Player.Brake;
-        input_fire1 = playerInput.Player.Fire1;
-        playerID = ID;
-        enableInput();
     }
     
-    public override void Start() {
-        base.Start();   
-
+    private void Awake()
+    {
+        inputAsset = GetComponent<PlayerInput>();
+        Debug.Log("Input initialized for " + inputAsset.currentControlScheme);
+        state = playerState.dead;
+        enableInput();
     }
 
     // Update is called once per frame
@@ -44,13 +43,11 @@ public class PlayerController : Controller {
         switch (state)
         {
             case playerState.alive:
-                base.Update();
-                pawnMovement.brakeInput = (input_brake.ReadValue<float>());
-                pawnMovement.throttleInput = input_movement.ReadValue<Vector2>().y;
-                pawnMovement.turnInput = (input_movement.ReadValue<Vector2>().x);
+                transform.position = pawn.transform.position;
+                transform.rotation = pawn.transform.rotation;
                 break;
             case playerState.dead:
-                base.Update();
+
                 break;
         }
        
@@ -64,13 +61,30 @@ public class PlayerController : Controller {
 
     private void brake(InputAction.CallbackContext context)
     {
-       // pawnMovement.setBrake(input_brake.ReadValue<float>());
+        float brakeInput = context.action.ReadValue<float>();
+        pawnMovement.brakeInput = brakeInput;
+        //Debug.Log("BRAKING:" + brakeInput);
     }
 
     private void movement(InputAction.CallbackContext context)
     {
-        //pawnMovement.setThrottle(input_movement.ReadValue<Vector2>().y);
-        //pawnMovement.Turn(input_movement.ReadValue<Vector2>().x);
+
+        Vector2 moveInput = context.action.ReadValue<Vector2>();
+        pawnMovement.throttleInput = moveInput.y;
+        //Debug.Log("MOVING: " + moveInput);
+    }
+
+    private void turn(InputAction.CallbackContext context )
+    {
+        Vector2 turnInput = context.action.ReadValue<Vector2>();
+        pawnMovement.turnInput = turnInput.x;
+        //Debug.Log("Turning: " + turnInput);
+    }
+
+    private void deadInput(InputAction.CallbackContext context)
+    {
+        Debug.Log("Dead input");
+        spawner.spawnPawn(this);
     }
 
     #endregion
@@ -80,12 +94,30 @@ public class PlayerController : Controller {
     /// Enable all input and bind functions to input events
     /// </summary>
     public void enableInput() {
-        input_movement.Enable();
+        inputAsset.onActionTriggered += onAction;
+    }
 
-        input_brake.Enable();
-
-        input_fire1.Enable();
-        input_fire1.performed += mouse1;
+    private void onAction(InputAction.CallbackContext callback)
+    {
+        switch(callback.action.name)
+        {
+            case "Movement":
+                movement(callback);
+                break;
+            case "Fire1":
+                mouse1(callback);
+                break;
+            case "Brake":
+                brake(callback);
+                break;
+            case "Turning":
+                turn(callback);
+                break;
+            case "DeadInput":
+                deadInput(callback);
+                break;
+        }
+        return;
     }
 
 
@@ -94,12 +126,7 @@ public class PlayerController : Controller {
     /// </summary>
     public void disableInput()
     {
-        input_movement.Disable();
-
-        input_brake.Disable();
-
-        input_fire1.Disable();
-        input_fire1.performed -= mouse1;
+        inputAsset.onActionTriggered -= onAction;
     }
 
     public void OnDestroy()
@@ -108,6 +135,8 @@ public class PlayerController : Controller {
         {
             GameManager.Game.players.Remove(this);
         }
+        Destroy(pawn);
+        Debug.Log("Destroyed player controller");
     }
 
     #endregion
@@ -115,7 +144,7 @@ public class PlayerController : Controller {
     public override void death()
     {
         state = playerState.dead;
-        disableInput();
+        inputAsset.SwitchCurrentActionMap("Dead");
     
     }
 }

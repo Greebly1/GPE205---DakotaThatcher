@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public enum sightState { seesEnemy, doesNotSeeEnemy}
 
@@ -13,35 +14,27 @@ public class AiSenses : MonoBehaviour
     public float sightRange = 100.0f;
     private noise.sound lastHeardSound;
     public Action heardSound = delegate { };
-    public Action<GameObject> sawEnemy = delegate { };
+    public Action<List<PlayerController>> sawEnemy = delegate { };
+    public Action<List<PlayerController>> lostEnemy = delegate { };
+    public List<PlayerController> targets = new List<PlayerController>();
+    public int enemiesSeen = 0;
 
     public sightState _sightstate;
-
     #endregion
 
     #region Initialize
 
     private void Update()
     {
-        //Debug.DrawLine(this.transform.position, this.transform.position + getTurretForward() * 25, Color.yellow);
-        foreach (PlayerController player in GameManager.Game.players)
-        {
-            //Debug.Log(GameManager.Game.players.Count);
-            if (canSee(player.pawn.gameObject))
-            {
-                switch (_sightstate)
-                {
-                    case sightState.seesEnemy:
-                        break;
-                    case sightState.doesNotSeeEnemy:
-                        sawEnemy.Invoke(player.pawn.gameObject);
-                        Debug.Log("Saw player");
-                        _sightstate = sightState.seesEnemy;
-                        break;
-                }
-                
-            } else { _sightstate = sightState.doesNotSeeEnemy; }
+        targets = GameManager.Game.players.Where(player => player.pawn != null && canSee(player.pawn.gameObject)).ToList();
+
+        if (targets.Count > enemiesSeen) {
+            sawEnemy.Invoke(targets);
+        } else if (targets.Count < enemiesSeen) {
+            lostEnemy.Invoke(targets);
         }
+
+        enemiesSeen = targets.Count;
     }
     void Awake()
     {

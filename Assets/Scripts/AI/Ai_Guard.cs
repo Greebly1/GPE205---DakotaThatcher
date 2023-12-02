@@ -25,7 +25,7 @@ public class Ai_Guard : BaseAiController
     {
         if (targetEnemy == null)
         {
-            targetEnemy = GameManager.Game.player.pawn.gameObject;
+            targetEnemy = GameManager.Game.player1.pawn.gameObject;
 
             guardState = new GuardState(this,AiTargeter);
             returnState = new ReturnState(this, AiTargeter, _guardPost);

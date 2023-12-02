@@ -302,7 +302,8 @@ MonoBehaviour:
   prefab_playerController: {fileID: 8688140893668662679, guid: 40c5c301837ead94f8a0662843e6af4b, type: 3}
   prefab_playerPawn: {fileID: 377728378214556212, guid: 6f53b0393aca22e4e9d4d607981804cd, type: 3}
   prefab_playerCamera: {fileID: 4219191164066810771, guid: 7fb67a31fad45e548a0c7e607dbb12a0, type: 3}
-  player: {fileID: 0}
+  player1: {fileID: 0}
+  player2: {fileID: 0}
   players: []
   enemyAIs: []
 --- !u!4 &587535652
@@ -507,7 +508,8 @@ MonoBehaviour:
   tilePrefabs:
   - {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
   - {fileID: 121816, guid: c3053873ba73b614b83c510989af0a5d, type: 3}
-  endPrefab: {fileID: 121816, guid: 5de1c37dbf4ff174a97127f7ea132057, type: 3}
+  - {fileID: 121816, guid: 5de1c37dbf4ff174a97127f7ea132057, type: 3}
+  endPrefab: {fileID: 1257115832951930393, guid: e5d960843db6a87429a2da4ce09f9f26, type: 3}
   tilePrefab: {fileID: 121816, guid: 41d4243be8ad3a5409422171976de7ff, type: 3}
   emptyTilePrefab: {fileID: 0}
 --- !u!1660057539 &9223372036854775807

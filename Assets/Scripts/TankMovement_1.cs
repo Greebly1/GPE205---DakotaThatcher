@@ -298,6 +298,13 @@ public class TankMovement : MonoBehaviour
 
     #endregion
 
+    public void resetInput()
+    {
+        brakeInput = 0;
+        turnInput = 0;
+        throttleInput = 0;
+    }
+
     public float linearFormula(float slope, float x, float intercept)
     {
         return slope * x + intercept;

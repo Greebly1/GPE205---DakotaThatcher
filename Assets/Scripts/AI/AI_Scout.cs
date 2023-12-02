@@ -17,7 +17,7 @@ public class AI_Scout : BaseAiController
     {
         if (targetEnemy == null)
         {
-            targetEnemy = GameManager.Game.player.pawn.gameObject;
+            targetEnemy = GameManager.Game.player1.pawn.gameObject;
 
             patrolState = new PatrolState(this, patrolLocations, AiTargeter);
             chaseState = new ChaseState(this, AiTargeter);

@@ -35,7 +35,7 @@ public class Spawner : MonoBehaviour
     {
         if (currentSpawnCount > 0 || endless)
         {
-            currentObject = Instantiate(spawnPrefab, this.gameObject.transform.position, this.gameObject.transform.rotation);
+            currentObject = Instantiate(spawnPrefab, transform.position, transform.rotation);
             _currentState = spawnerState.spawned;
             currentSpawnCount--;
         }  else

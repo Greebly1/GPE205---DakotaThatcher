@@ -26,7 +26,8 @@ public class GameManager : MonoBehaviour {
     public GameObject prefab_playerPawn;
     public GameObject prefab_playerCamera;
 
-    public PlayerController player;
+    public PlayerController player1;
+    public PlayerController player2;
 
     public List<PlayerController> players;
     public List<BaseAiController> enemyAIs;
@@ -43,7 +44,7 @@ public class GameManager : MonoBehaviour {
         }
         players = new List<PlayerController> ();
         state = startState;
-        
+       
     }
 
     private void Update()
@@ -164,8 +165,8 @@ public class GameManager : MonoBehaviour {
             Destroy(player.pawn.gameObject);
             Destroy(player.gameObject);
         }
-        Destroy(player.pawn.gameObject);
-        Destroy(player.gameObject);
+        Destroy(player1.pawn.gameObject);
+        Destroy(player1.gameObject);
         enemyAIs = new List<BaseAiController>();
     }
 
@@ -183,34 +184,24 @@ public class GameManager : MonoBehaviour {
     }
     #endregion
 
-
-
-    /// <summary>
-    /// Instantiates a player controller and a pawn at the given position,
-    /// saves a reference to the player controller to the static variable 'player'
-    /// lastly initializes the player controller by calling player.Init();
-    /// </summary>
-    /// <param name="spawnPoint"></param>
-    public void SpawnPlayer(Transform spawnPoint, int playerID) {
-        GameObject playerControllerobj;
-        Debug.Log(playerID);
-        if (players.Count >= playerID)
+    public PlayerController addPlayer(PlayerController player)
+    {
+        if (player1 == null)
         {
-            playerControllerobj = Instantiate(prefab_playerController, spawnPoint.position, spawnPoint.rotation);
-            player = playerControllerobj.GetComponent<PlayerController>();
-        } else { playerControllerobj = players[playerID].gameObject; }
-        
-        GameObject playerPawnobj = Instantiate(prefab_playerPawn, playerControllerobj.transform.position, playerControllerobj.transform.rotation);
-        GameObject playerCameraobj = Instantiate(prefab_playerCamera, spawnPoint.position, spawnPoint.rotation);
-
-
-        
-        player.Init(playerPawnobj.GetComponent<TankPawn>(), playerID);
-        playerCameraobj.GetComponent<cameraFollow>().focus = playerPawnobj;
-
-        players.Add(playerControllerobj.GetComponent<PlayerController>());
+            player1 = player;
+            players.Add(player);
+            return player;
+        } else if (player2 == null)
+        {
+            player2 = player;
+            players.Add(player2);
+            return player;
+        } else
+        {
+            Destroy(player.gameObject);
+            return null;
+        }
     }
-
 
     public enum gameState
     {

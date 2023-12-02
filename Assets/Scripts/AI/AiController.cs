@@ -102,7 +102,7 @@ public class AiController : Controller
 
         if(targetEnemy == null)
         {
-            targetEnemy = GameManager.Game.player.pawn.gameObject;
+            targetEnemy = GameManager.Game.player1.pawn.gameObject;
         }
 
         makeDecision();

@@ -16,7 +16,7 @@ public class AITurret : BaseAiController
     {
         if (targetEnemy == null)
         {
-            targetEnemy = GameManager.Game.player.pawn.gameObject;
+            targetEnemy = GameManager.Game.player1.pawn.gameObject;
 
             turnToState = new TurnToState(this, this.AiTargeter, this.targetEnemy);
             attackState = new AttackState(this, this.tankGun);

@@ -15,6 +15,7 @@ public class IdleState : IState
 
     void IState.onBegin()
     {
+        _controller.pawnMovement.resetInput();
         //Debug.Log("Idle state began");
     }
 
