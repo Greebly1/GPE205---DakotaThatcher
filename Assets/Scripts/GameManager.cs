@@ -43,7 +43,6 @@ public class GameManager : MonoBehaviour {
             Destroy(gameObject);
         }
         players = new List<PlayerController> ();
-        state = startState;
        
     }
 
@@ -60,8 +59,7 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Start() {
-        Debug.Log(state);
-        SetState(state);
+        SetState(startState);
     }
 
     public void SetState(gameState newState)

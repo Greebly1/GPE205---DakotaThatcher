@@ -67,6 +67,9 @@ LightmapSettings:
     m_LightmapParameters: {fileID: 0}
     m_LightmapsBakeMode: 1
     m_TextureCompression: 1
+    m_FinalGather: 0
+    m_FinalGatherFiltering: 1
+    m_FinalGatherRayCount: 256
     m_ReflectionCompression: 2
     m_MixedBakeMode: 2
     m_BakeBackend: 1
@@ -410,7 +413,7 @@ MonoBehaviour:
   m_DefaultControlScheme: 
   m_DefaultActionMap: TitleScreen
   m_SplitScreenIndex: -1
-  m_Camera: {fileID: 352389162}
+  m_Camera: {fileID: 0}
 --- !u!114 &199352720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -922,7 +925,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &763506066
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1464,7 +1467,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1073727403
 Transform:
   m_ObjectHideFlags: 0

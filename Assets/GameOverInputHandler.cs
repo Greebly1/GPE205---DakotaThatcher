@@ -24,6 +24,7 @@ public class GameOverInputHandler : MonoBehaviour
 
     private void onAction(InputAction.CallbackContext callback)
     {
+        if (!callback.performed) return; //Early out if this is the wrong phase of the input action
         switch (callback.action.name)
         {
             case "Return":

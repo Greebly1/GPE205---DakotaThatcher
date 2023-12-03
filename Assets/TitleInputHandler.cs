@@ -17,16 +17,18 @@ public class TitleInputHandler : MonoBehaviour
         UIInput.onActionTriggered += onAction;
     }
 
-    private void OnDisable()
+    private void Disable()
     {
         UIInput.onActionTriggered -= onAction;
     }
 
     private void onAction(InputAction.CallbackContext callback)
     {
+        if (!callback.performed) return; //Early out if this is the wrong phase of the input action
         switch (callback.action.name)
         {
             case "Submit":
+                Disable();
                 onSubmit();
                 break;
         }
