@@ -31,7 +31,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1673720674725561168}
+  - {fileID: 1803238123285113719}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &4945181187985992688
@@ -79,7 +79,7 @@ MonoBehaviour:
   m_DefaultActionMap: Dead
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!1001 &2327749698936298647
+--- !u!1001 &3346728220437886128
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -89,7 +89,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3604563330327884873, guid: f0ffad58daf6cbe4cba1f934e37445a3, type: 3}
       propertyPath: m_Name
-      value: PlayerCameraPrefab
+      value: Player1CameraPrefab
       objectReference: {fileID: 0}
     - target: {fileID: 3996825996478144455, guid: f0ffad58daf6cbe4cba1f934e37445a3, type: 3}
       propertyPath: m_LocalPosition.x
@@ -131,13 +131,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7581945211514156002, guid: f0ffad58daf6cbe4cba1f934e37445a3, type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 4945181187985992688}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0ffad58daf6cbe4cba1f934e37445a3, type: 3}
---- !u!4 &1673720674725561168 stripped
+--- !u!4 &1803238123285113719 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3996825996478144455, guid: f0ffad58daf6cbe4cba1f934e37445a3, type: 3}
-  m_PrefabInstance: {fileID: 2327749698936298647}
+  m_PrefabInstance: {fileID: 3346728220437886128}
   m_PrefabAsset: {fileID: 0}

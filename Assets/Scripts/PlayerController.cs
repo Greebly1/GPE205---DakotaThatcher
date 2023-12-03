@@ -16,6 +16,8 @@ public class PlayerController : Controller {
     private PlayerInput inputAsset;
     private TankMovement pawnMovement;
 
+    public Action<playerState> playerStateChanged = delegate { };
+
     [SerializeField] Camera playerCam;
     [HideInInspector] public PlayerSpawn spawner;
     // Start is called before the first frame update
@@ -23,7 +25,7 @@ public class PlayerController : Controller {
     #region start/update
     public override void InitPawn(Pawn possessedPawn) {
         base.InitPawn(possessedPawn);
-        state = playerState.alive;
+        switchState(playerState.alive);
         inputAsset.SwitchCurrentActionMap("Player");
         possessedPawn.pawnDestroyed += death;
 
@@ -34,8 +36,17 @@ public class PlayerController : Controller {
     {
         inputAsset = GetComponent<PlayerInput>();
         Debug.Log("Input initialized for " + inputAsset.currentControlScheme);
-        state = playerState.dead;
+        switchState(playerState.dead);
         enableInput();
+    }
+
+    private void switchState(playerState newState)
+    {
+        if (state != newState)
+        {
+            state = newState;
+            playerStateChanged.Invoke(state);
+        }
     }
 
     // Update is called once per frame
