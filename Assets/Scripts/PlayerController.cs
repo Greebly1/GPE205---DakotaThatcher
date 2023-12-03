@@ -16,6 +16,8 @@ public class PlayerController : Controller {
     private PlayerInput inputAsset;
     private TankMovement pawnMovement;
 
+    public bool player1 = false;
+
     public Action<playerState> playerStateChanged = delegate { };
 
     [SerializeField] Camera playerCam;
@@ -35,6 +37,10 @@ public class PlayerController : Controller {
     private void Awake()
     {
         inputAsset = GetComponent<PlayerInput>();
+        if (inputAsset.defaultControlScheme == "Controller")
+        {
+            player1 = false;
+        } else { player1 = true; }
         Debug.Log("Input initialized for " + inputAsset.currentControlScheme);
         switchState(playerState.dead);
         enableInput();
@@ -156,6 +162,6 @@ public class PlayerController : Controller {
     {
         state = playerState.dead;
         inputAsset.SwitchCurrentActionMap("Dead");
-    
+        GameManager.Game.endGame(this);
     }
 }

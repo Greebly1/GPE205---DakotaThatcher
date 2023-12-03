@@ -31,6 +31,9 @@ public class GameManager : MonoBehaviour {
 
     public List<PlayerController> players;
     public List<BaseAiController> enemyAIs;
+
+    public bool player1Won = false;
+
     #endregion
 
     // Awake called before the game starts
@@ -179,6 +182,20 @@ public class GameManager : MonoBehaviour {
         Debug.Log("End mainmenu state");
     }
     #endregion
+
+    public void endGame(PlayerController player)
+    {
+        //Player 1 uses the keyboard
+        //player 2 uses controller
+
+        if (player.player1)
+        {
+            player1Won = false;
+        }
+        else { player1Won = true; }
+
+        SetState(gameState.GameOver);
+    }
 
     public PlayerController addPlayer(PlayerController player)
     {
