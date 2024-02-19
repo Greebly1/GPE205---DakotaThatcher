@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -25,7 +26,15 @@ public class Ai_Guard : BaseAiController
     {
         if (targetEnemy == null)
         {
-            targetEnemy = GameManager.Game.player1.pawn.gameObject;
+
+            try
+            {
+                targetEnemy = GameManager.Game.player1.pawn.gameObject;
+            } catch(NullReferenceException ex)
+            {
+                Debug.LogWarning(ex.Message);
+                targetEnemy = AiTargeter;
+            }
 
             guardState = new GuardState(this,AiTargeter);
             returnState = new ReturnState(this, AiTargeter, _guardPost);
